@@ -1,3 +1,4 @@
+# recommendations/models.py
 from django.db import models
 from core.models import CustomUser, GERCHIKOV_CHOICES, GENERATION_CHOICES
  
@@ -28,33 +29,28 @@ class IdealProfile(models.Model):
         related_name='ideal_profiles'
     )
  
-    # Свободное название роли
     target_role = models.CharField(
         max_length=200,
         verbose_name="Название роли / позиции"
     )
  
-    # Функции роли
     role_functions = models.JSONField(
         default=list,
         verbose_name="Функции роли",
         help_text="['sells', 'negotiates'] — что реально делает человек"
     )
  
-    # DISC
     disc_preferred = models.JSONField(
         verbose_name="Желаемый DISC профиль",
         help_text='{"D": 70, "I": 80, "S": 40, "C": 30}'
     )
  
-    # Предпочитаемые типы личности
     preferred_personality_types = models.JSONField(
         default=list,
         verbose_name="Предпочитаемые типы личности",
         help_text='["S", "C"]'
     )
  
-    # Мотивация по Герчикову
     gerchikov_preferred = models.CharField(
         max_length=50,
         choices=GERCHIKOV_CHOICES,
@@ -63,11 +59,9 @@ class IdealProfile(models.Model):
         verbose_name="Предпочитаемый тип мотивации по Герчикову"
     )
  
-    # Возраст
     age_min = models.PositiveIntegerField(default=20, verbose_name="Возраст от")
     age_max = models.PositiveIntegerField(default=50, verbose_name="Возраст до")
  
-    # Поколение
     generation_preferred = models.CharField(
         max_length=10,
         choices=GENERATION_CHOICES,
@@ -76,7 +70,6 @@ class IdealProfile(models.Model):
         verbose_name="Предпочитаемое поколение"
     )
  
-    # Стиль управления руководителя
     leadership_style = models.CharField(
         max_length=50,
         choices=LEADERSHIP_STYLE_CHOICES,
@@ -99,7 +92,6 @@ class IdealProfile(models.Model):
         verbose_name="Подбор в существующую команду?"
     )
  
-    # Команда
     team = models.ForeignKey(
         'profiles.Team',
         on_delete=models.SET_NULL,
@@ -136,9 +128,12 @@ class RecommendationLog(models.Model):
         verbose_name="Рекомендованный сотрудник"
     )
  
-    match_score = models.FloatField(verbose_name="Итоговый балл (0-100)")
+    match_score = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="Итоговый балл (0-100)"
+    )
  
-    # Детализация по осям для аналитики
     score_breakdown = models.JSONField(
         default=dict,
         verbose_name="Детализация по осям"
@@ -174,4 +169,4 @@ class RecommendationLog(models.Model):
         verbose_name_plural = "Логи рекомендаций"
  
     def __str__(self):
-        return f"{self.employee.fio} — {self.match_score:.1f}% — {self.get_status_display()}"
+        return f"{self.employee.fio} — {self.match_score:.1f}% — {self.get_status_display()}" if self.match_score else f"{self.employee.fio} — {self.get_status_display()}"

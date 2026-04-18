@@ -22,7 +22,7 @@ class CustomUser(AbstractUser):
     is_manager  = models.BooleanField(default=True,  verbose_name="Руководитель")
     is_employee = models.BooleanField(default=False, verbose_name="Сотрудник")
  
-    # DISC профиль руководителя — {"D": 80, "I": 40, "S": 30, "C": 60}
+    # DISC профиль руководителя
     # Заполняется после прохождения DISC-теста
     disc_profile = models.JSONField(
         null=True,

@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.contrib import messages
 from .forms import IdealProfileForm
 from .models import IdealProfile, RecommendationLog
 from .scorer import get_recommendations, EmployeeScorer
@@ -17,7 +16,6 @@ def create_ideal_profile(request):
             profile.manager = request.user
             profile.save()
             form.save_m2m()
-            
             return redirect('show_recommendation', profile_id=profile.id)
     else:
         form = IdealProfileForm(manager=request.user, initial={
@@ -35,84 +33,128 @@ def create_ideal_profile(request):
 def show_recommendation(request, profile_id):
     ideal = get_object_or_404(IdealProfile, id=profile_id, manager=request.user)
     
-    recommendations = get_recommendations(ideal, limit=10)
+    # Получаем ID уже обработанных
+    processed_ids = set(
+        RecommendationLog.objects.filter(
+            manager=request.user,
+            ideal_profile=ideal
+        ).values_list('employee_id', flat=True)
+    )
     
-    for rec in recommendations:
-        employee = rec['employee']
-        
+    pending_ids = set(request.session.get(f'pending_candidates_{profile_id}', []))
+    processed_ids.update(pending_ids)
+    
+    all_recommendations = get_recommendations(ideal, limit=10)
+    
+    top_candidate = None
+    for rec in all_recommendations:
+        if rec['employee'].id not in processed_ids:
+            top_candidate = rec
+            break
+    
+    pending_candidates = Employee.objects.filter(id__in=pending_ids) if pending_ids else []
+    
+    if top_candidate:
+        employee = top_candidate['employee']
         
         if employee.disc_scores:
-            rec['disc_d'] = employee.disc_scores.get('D', 0)
-            rec['disc_i'] = employee.disc_scores.get('I', 0)
-            rec['disc_s'] = employee.disc_scores.get('S', 0)
-            rec['disc_c'] = employee.disc_scores.get('C', 0)
+            top_candidate['disc_d'] = employee.disc_scores.get('D', 0)
+            top_candidate['disc_i'] = employee.disc_scores.get('I', 0)
+            top_candidate['disc_s'] = employee.disc_scores.get('S', 0)
+            top_candidate['disc_c'] = employee.disc_scores.get('C', 0)
         else:
-            rec['disc_d'] = rec['disc_i'] = rec['disc_s'] = rec['disc_c'] = 0
+            top_candidate['disc_d'] = top_candidate['disc_i'] = top_candidate['disc_s'] = top_candidate['disc_c'] = 0
         
-        # Определяем доминирующий тип DISC
-        disc_values = {
-            'D': rec['disc_d'],
-            'I': rec['disc_i'],
-            'S': rec['disc_s'],
-            'C': rec['disc_c']
-        }
-        rec['disc_primary'] = max(disc_values, key=disc_values.get) if any(disc_values.values()) else '—'
-        
-        
-        rec['generation_display'] = employee.get_generation_display()
-        rec['gerchikov_display'] = employee.get_gerchikov_type_display()
-        
-        
-        rec['disc_d_class'] = 'high' if rec['disc_d'] >= 60 else ''
-        rec['disc_i_class'] = 'high' if rec['disc_i'] >= 60 else ''
-        rec['disc_s_class'] = 'high' if rec['disc_s'] >= 60 else ''
-        rec['disc_c_class'] = 'high' if rec['disc_c'] >= 60 else ''
-    
-
-    for rec in recommendations[:5]:
-        RecommendationLog.objects.update_or_create(
-            manager=request.user,
-            ideal_profile=ideal,
-            employee=rec['employee'],
-            defaults={
-                'match_score': rec['score'],
-                'score_breakdown': rec['breakdown'],
-                'status': 'good' if rec['score'] >= 70 else 'average',
-            }
-        )
+        top_candidate['generation_display'] = employee.get_generation_display()
+        top_candidate['gerchikov_display'] = employee.get_gerchikov_type_display()
     
     return render(request, 'recommendations/best_recommendation.html', {
         'ideal': ideal,
-        'recommendations': recommendations,
+        'top_candidate': top_candidate,
+        'pending_candidates': pending_candidates,
+        'all_count': len(all_recommendations),
+        'reviewed_count': len(processed_ids),
     })
 
 
 @login_required
-def save_recommendation_status(request, profile_id, employee_id):
-    """Сохраняет статус рекомендации"""
-    if request.method == 'POST':
-        ideal = get_object_or_404(IdealProfile, id=profile_id, manager=request.user)
-        employee = get_object_or_404(Employee, id=employee_id)
-        
-        status = request.POST.get('status')
-        comment = request.POST.get('comment', '')
-        
-        log, created = RecommendationLog.objects.update_or_create(
-            manager=request.user,
-            ideal_profile=ideal,
-            employee=employee,
-            defaults={
-                'status': status,
-                'comment': comment,
-                'works_well_in_team': request.POST.get('works_well') == 'on',
-                'productive': request.POST.get('productive') == 'on',
-                'fits_manager_style': request.POST.get('fits_style') == 'on',
-            }
-        )
-        
-        if status == 'taken' and ideal.team:
-            ideal.team.employees.add(employee)
-        
-        return redirect('show_recommendation', profile_id=profile_id)
+def hire_employee(request, profile_id, employee_id):
+    ideal = get_object_or_404(IdealProfile, id=profile_id, manager=request.user)
+    employee = get_object_or_404(Employee, id=employee_id)
+    
+    all_recommendations = get_recommendations(ideal, limit=10)
+    score = 0
+    for rec in all_recommendations:
+        if rec['employee'].id == employee_id:
+            score = rec['score']
+            break
+    
+    RecommendationLog.objects.update_or_create(
+        manager=request.user,
+        ideal_profile=ideal,
+        employee=employee,
+        defaults={
+            'match_score': score,
+            'status': 'taken',
+            'comment': 'Нанят по рекомендации'
+        }
+    )
+    
+    if ideal.team:
+        ideal.team.employees.add(employee)
+    
+    pending_ids = request.session.get(f'pending_candidates_{profile_id}', [])
+    if employee.id in pending_ids:
+        pending_ids.remove(employee.id)
+        request.session[f'pending_candidates_{profile_id}'] = pending_ids
+    
+    messages.success(request, f' {employee.fio} нанят!')
+    return redirect('show_recommendation', profile_id=profile_id)
+
+
+@login_required
+def reject_employee(request, profile_id, employee_id):
+    ideal = get_object_or_404(IdealProfile, id=profile_id, manager=request.user)
+    employee = get_object_or_404(Employee, id=employee_id)
+    
+    RecommendationLog.objects.update_or_create(
+        manager=request.user,
+        ideal_profile=ideal,
+        employee=employee,
+        defaults={
+            'match_score': 0,
+            'status': 'rejected',
+            'comment': 'Отклонен'
+        }
+    )
+    
+    messages.info(request, f' {employee.fio} отклонен')
+    return redirect('show_recommendation', profile_id=profile_id)
+
+
+@login_required
+def postpone_employee(request, profile_id, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+    
+    pending_ids = request.session.get(f'pending_candidates_{profile_id}', [])
+    
+    if employee_id not in pending_ids:
+        pending_ids.append(employee_id)
+        request.session[f'pending_candidates_{profile_id}'] = pending_ids
+        messages.info(request, f' {employee.fio} отложен')
+    else:
+        messages.warning(request, f'{employee.fio} уже в отложенных')
+    
+    return redirect('show_recommendation', profile_id=profile_id)
+
+
+@login_required
+def remove_from_pending(request, profile_id, employee_id):
+    pending_ids = request.session.get(f'pending_candidates_{profile_id}', [])
+    
+    if employee_id in pending_ids:
+        pending_ids.remove(employee_id)
+        request.session[f'pending_candidates_{profile_id}'] = pending_ids
+        messages.success(request, 'Сотрудник удален из отложенных')
     
     return redirect('show_recommendation', profile_id=profile_id)

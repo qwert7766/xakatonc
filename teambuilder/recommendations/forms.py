@@ -109,10 +109,8 @@ class IdealProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         manager = kwargs.pop('manager', None)
         
-        # Вызываем родительский __init__
         super().__init__(*args, **kwargs)
         
-        # Если передан manager, настраиваем поле team
         if manager:
             self.fields['team'].queryset = manager.teams.all()
             self.fields['team'].required = False

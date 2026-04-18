@@ -3,15 +3,100 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Рекомендации — {{ ideal.target_role }}</title>
+    <title>Рекомендация — {{ ideal.target_role }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --pink: #FF3495;
+            --gray-bg: #F2F2F2;
+            --gray-text: #666666;
+            --border: #E0E0E0;
+            --green: #00C853;
+            --orange: #FF9800;
+            --red: #FF3B30;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-bg);
+            color: var(--black);
+        }
+        
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-img { height: 44px; }
+        .logo-app-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+        }
+        .nav-link:hover { color: var(--white); }
+        
+        .btn-logout {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--pink);
+            text-decoration: none;
+            border: 1px solid var(--pink);
+            padding: 6px 14px;
+            border-radius: 2px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-logout:hover { background: var(--pink); color: var(--white); }
+        
         .hero-banner {
             background: var(--black);
             padding: 48px 40px;
             position: relative;
+            overflow: hidden;
         }
+        
         .hero-banner::after {
             content: '';
             position: absolute;
@@ -19,131 +104,365 @@
             width: 5px;
             background: var(--pink);
         }
-        .recommendations-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 24px;
-        }
-        .recommendation-card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 24px 32px;
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 24px;
-            align-items: center;
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .recommendation-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .score-badge {
-            width: 80px;
-            text-align: center;
-        }
-        .score-value {
+        
+        .hero-inner { max-width: 1100px; margin: 0 auto; }
+        
+        .hero-eyebrow {
             font-family: var(--font-heading);
-            font-size: 32px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+        
+        .hero-title {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 52px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 0.92;
+            color: var(--white);
+            margin-bottom: 16px;
+        }
+        
+        .hero-desc {
+            font-size: 15px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .progress-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+        }
+        
+        .stat-item {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .stat-value {
             font-weight: 900;
             color: var(--pink);
+            font-size: 18px;
+            margin-right: 5px;
         }
-        .score-label {
-            font-size: 11px;
-            color: var(--gray-text);
-            letter-spacing: 1px;
-        }
-        .employee-info {
-            flex: 1;
-        }
-        .employee-name {
-            font-family: var(--font-heading);
-            font-size: 22px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        .employee-meta {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .meta-tag {
-            font-size: 12px;
-            color: var(--gray-text);
-        }
-        .meta-tag strong {
-            color: var(--black);
-        }
-        .disc-badge {
-            display: inline-flex;
-            gap: 4px;
-            margin-left: 16px;
-        }
-        .disc-letter {
-            width: 28px;
-            height: 28px;
-            background: var(--gray-bg);
-            border-radius: 2px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-        }
-        .disc-letter.high {
-            background: var(--pink);
-            color: white;
-        }
-        .breakdown {
-            font-size: 11px;
-            color: var(--gray-text);
-            margin-top: 8px;
-        }
-        .actions {
-            display: flex;
-            gap: 8px;
-        }
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 11px;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            background: var(--white);
-            border-radius: 4px;
-        }
+        
         .ideal-summary {
             background: rgba(255,255,255,0.08);
             border-radius: 4px;
             padding: 16px 24px;
-            margin-top: 16px;
+            margin-top: 20px;
         }
+        
         .ideal-summary p {
             margin: 4px 0;
             font-size: 13px;
             color: rgba(255,255,255,0.7);
         }
-        .btn-primary {
+        
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        .candidate-card {
+            background: var(--white);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .score-header {
+            background: var(--black);
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .score-match {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--pink);
+            line-height: 1;
+        }
+        
+        .score-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .rank-badge {
+            background: var(--pink);
+            padding: 8px 20px;
+            border-radius: 2px;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+        
+        .candidate-body {
+            padding: 32px;
+        }
+        
+        .candidate-name {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        
+        .candidate-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .meta-label {
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+        }
+        
+        .meta-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .disc-container {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0;
+        }
+        
+        .disc-item {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: var(--gray-bg);
+            border-radius: 4px;
+        }
+        
+        .disc-letter {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        
+        .disc-item.high .disc-letter { color: var(--pink); }
+        
+        .disc-value {
+            font-size: 20px;
+            font-weight: 900;
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+            padding: 20px;
+            background: var(--gray-bg);
+            border-radius: 4px;
+        }
+        
+        .breakdown-item {
+            text-align: center;
+        }
+        
+        .breakdown-label {
+            font-family: var(--font-heading);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            margin-bottom: 4px;
+        }
+        
+        .breakdown-value {
+            font-size: 18px;
+            font-weight: 900;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn-hire {
+            flex: 1;
+            background: var(--green);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .btn-hire:hover { transform: translateY(-2px); background: #00b048; }
+        
+        .btn-postpone {
+            flex: 1;
+            background: var(--orange);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .btn-postpone:hover { transform: translateY(-2px); background: #e68900; }
+        
+        .btn-reject {
+            flex: 1;
+            background: var(--red);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 4px;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .btn-reject:hover { transform: translateY(-2px); background: #e02e24; }
+        
+        .btn-secondary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--pink);
-            color: var(--white);
+            background: transparent;
+            color: var(--black);
             font-family: var(--font-heading);
             font-weight: 800;
             font-size: 12px;
             letter-spacing: 2px;
             text-transform: uppercase;
             text-decoration: none;
-            padding: 13px 24px;
-            border: none;
+            padding: 12px 24px;
+            border: 2px solid var(--black);
             border-radius: 2px;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: background 0.15s, color 0.15s;
         }
-        .btn-primary:hover { background: #ff1a80; }
+        .btn-secondary:hover { background: var(--black); color: var(--white); }
+        
+        .pending-section {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+        
+        .pending-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pending-badge {
+            background: var(--orange);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .pending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .pending-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-bg);
+            border-radius: 4px;
+        }
+        
+        .pending-name {
+            font-weight: 600;
+        }
+        
+        .pending-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: var(--white);
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .breakdown-grid { grid-template-columns: repeat(2, 1fr); }
+            .action-buttons { flex-direction: column; }
+            .candidate-meta { flex-direction: column; gap: 12px; }
+            .header { padding: 0 20px; }
+            .page { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -159,10 +478,16 @@
     </header>
 
     <div class="hero-banner">
-        <div class="hero-inner" style="max-width: 1100px; margin: 0 auto;">
-            <p class="hero-eyebrow">Рекомендации</p>
-            <h1 class="hero-title">Лучшие кандидаты</h1>
+        <div class="hero-inner">
+            <p class="hero-eyebrow">Рекомендация</p>
+            <h1 class="hero-title">Лучший кандидат</h1>
             <p class="hero-desc">Для роли: <strong>{{ ideal.target_role }}</strong></p>
+            
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ reviewed_count }}</span> / <span class="stat-value">{{ all_count }}</span> просмотрено
+                </div>
+            </div>
             
             <div class="ideal-summary">
                 <p>🎯 Идеальный DISC: D={{ ideal.disc_preferred.D }}% / I={{ ideal.disc_preferred.I }}% / S={{ ideal.disc_preferred.S }}% / C={{ ideal.disc_preferred.C }}%</p>
@@ -174,60 +499,204 @@
         </div>
     </div>
 
-    <main class="page" style="max-width: 1100px;">
-        {% if recommendations %}
-            <div class="recommendations-grid">
-                {% for rec in recommendations %}
-                    <div class="recommendation-card">
-                        <div class="score-badge">
-                            <div class="score-value">{{ rec.score }}%</div>
-                            <div class="score-label">соответствие</div>
+    <main class="page">
+        {% if top_candidate %}
+            {% with candidate=top_candidate %}
+            <div class="candidate-card">
+                <div class="score-header">
+                    <div class="score-match">
+                        <div class="score-value">{{ candidate.score }}%</div>
+                        <div class="score-label">соответствие</div>
+                    </div>
+                    <div class="rank-badge">#1 ЛУЧШИЙ КАНДИДАТ</div>
+                </div>
+                
+                <div class="candidate-body">
+                    <div class="candidate-name">{{ candidate.employee.fio }}</div>
+                    
+                    <div class="candidate-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Возраст</span>
+                            <span class="meta-value">{{ candidate.employee.age }} лет</span>
                         </div>
-                        
-                        <div class="employee-info">
-                            <div class="employee-name">{{ rec.employee.fio }}</div>
-                            <div class="employee-meta">
-                                <span class="meta-tag"><strong>Возраст:</strong> {{ rec.employee.age }} лет</span>
-                                <span class="meta-tag"><strong>Поколение:</strong> {{ rec.generation_display }}</span>
-                                <span class="meta-tag"><strong>Мотивация:</strong> {{ rec.gerchikov_display }}</span>
-                                
-                                {% if rec.employee.disc_scores %}
-                                    <div class="disc-badge">
-                                        <span class="disc-letter {% if rec.disc_d >= 60 %}high{% endif %}">D</span>
-                                        <span class="disc-letter {% if rec.disc_i >= 60 %}high{% endif %}">I</span>
-                                        <span class="disc-letter {% if rec.disc_s >= 60 %}high{% endif %}">S</span>
-                                        <span class="disc-letter {% if rec.disc_c >= 60 %}high{% endif %}">C</span>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="breakdown">
-                                DISC: {{ rec.breakdown.disc }}% | Возраст: {{ rec.breakdown.age }}% | 
-                                Мотивация: {{ rec.breakdown.gerchikov }}% | Функции: {{ rec.breakdown.role_functions }}%
-                            </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Поколение</span>
+                            <span class="meta-value">{{ candidate.generation_display|default:"—" }}</span>
                         </div>
-                        
-                        <div class="actions">
-                            <form method="post" action="{% url 'save_recommendation_status' ideal.id rec.employee.id %}">
-                                {% csrf_token %}
-                                <select name="status" class="meta-tag" style="padding: 8px;">
-                                    <option value="good">👍 Хороший</option>
-                                    <option value="average">📊 Средний</option>
-                                    <option value="taken">✅ Взять в команду</option>
-                                    <option value="rejected">❌ Отклонить</option>
-                                </select>
-                                <button type="submit" class="btn-primary btn-sm">Сохранить</button>
-                            </form>
+                        <div class="meta-item">
+                            <span class="meta-label">Мотивация</span>
+                            <span class="meta-value">{{ candidate.gerchikov_display|default:"—" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Роль в команде</span>
+                            <span class="meta-value">{{ candidate.employee.role_in_team|default:"—" }}</span>
                         </div>
                     </div>
-                {% endfor %}
+                    
+                    <div class="disc-container">
+                        <div class="disc-item {% if candidate.disc_d >= 60 %}high{% endif %}">
+                            <div class="disc-letter">D</div>
+                            <div class="disc-value">{{ candidate.disc_d }}%</div>
+                            <div class="meta-label">Доминирование</div>
+                        </div>
+                        <div class="disc-item {% if candidate.disc_i >= 60 %}high{% endif %}">
+                            <div class="disc-letter">I</div>
+                            <div class="disc-value">{{ candidate.disc_i }}%</div>
+                            <div class="meta-label">Влияние</div>
+                        </div>
+                        <div class="disc-item {% if candidate.disc_s >= 60 %}high{% endif %}">
+                            <div class="disc-letter">S</div>
+                            <div class="disc-value">{{ candidate.disc_s }}%</div>
+                            <div class="meta-label">Стабильность</div>
+                        </div>
+                        <div class="disc-item {% if candidate.disc_c >= 60 %}high{% endif %}">
+                            <div class="disc-letter">C</div>
+                            <div class="disc-value">{{ candidate.disc_c }}%</div>
+                            <div class="meta-label">Аналитичность</div>
+                        </div>
+                    </div>
+                    
+                    <div class="breakdown-grid">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">DISC</div>
+                            <div class="breakdown-value">{{ candidate.breakdown.disc }}%</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Функции</div>
+                            <div class="breakdown-value">{{ candidate.breakdown.role_functions }}%</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Мотивация</div>
+                            <div class="breakdown-value">{{ candidate.breakdown.gerchikov }}%</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Возраст</div>
+                            <div class="breakdown-value">{{ candidate.breakdown.age }}%</div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">Поколение</div>
+                            <div class="breakdown-value">{{ candidate.breakdown.generation }}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <form method="post" action="{% url 'hire_employee' ideal.id candidate.employee.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-hire"> Нанять сотрудника</button>
+                        </form>
+                        <form method="post" action="{% url 'postpone_employee' ideal.id candidate.employee.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-postpone"> Отложить</button>
+                        </form>
+                        <form method="post" action="{% url 'reject_employee' ideal.id candidate.employee.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-reject"> Отказать</button>
+                        </form>
+                    </div>
+                </div>
             </div>
+            {% endwith %}
         {% else %}
             <div class="empty-state">
-                <p>Нет сотрудников, соответствующих критериям</p>
-                <p class="meta-tag">Попробуйте расширить параметры поиска</p>
-                <a href="{% url 'create_ideal_profile' %}" class="btn-primary" style="margin-top: 20px;">Создать новый профиль</a>
+                <p>🎉 Поздравляем! Все кандидаты просмотрены</p>
+                <p class="meta-label" style="margin-top: 10px;">Вы рассмотрели всех {{ all_count }} кандидатов</p>
+                <a href="{% url 'create_ideal_profile' %}" class="btn-secondary" style="margin-top: 20px; display: inline-block;">Создать новый профиль</a>
             </div>
         {% endif %}
+        
+        {% if pending_candidates %}
+        <div class="pending-section">
+            <div class="pending-title">
+                📦 Отложенные кандидаты
+                <span class="pending-badge">{{ pending_candidates|length }}</span>
+            </div>
+            <div class="pending-list">
+                {% for employee in pending_candidates %}
+                <div class="pending-item">
+                    <span class="pending-name">{{ employee.fio }}</span>
+                    <div class="pending-actions">
+                        <form method="post" action="{% url 'hire_employee' ideal.id employee.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-hire btn-small" style="padding: 4px 12px;">✅ Нанять</button>
+                        </form>
+                        <form method="post" action="{% url 'remove_from_pending' ideal.id employee.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-secondary btn-small" style="padding: 4px 12px;">🗑 Удалить</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'create_ideal_profile' %}" class="btn-secondary">← Создать новый профиль</a>
+        </div>
     </main>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script>
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        const colors = {
+            success: '#00C853',
+            info: '#FF9800',
+            warning: '#FF3B30',
+            error: '#FF3B30'
+        };
+        
+        toast.style.cssText = `
+            background: white;
+            color: ${colors[type] || colors.success};
+            padding: 12px 24px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border-left: 4px solid ${colors[type] || colors.success};
+            animation: slideIn 0.3s ease;
+            cursor: pointer;
+        `;
+        
+        toast.textContent = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+        
+        toast.onclick = () => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        };
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    {% if messages %}
+        {% for message in messages %}
+            showToast("{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+    {% endif %}
+    </script>
 </body>
 </html>
