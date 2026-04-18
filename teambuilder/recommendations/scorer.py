@@ -1,149 +1,348 @@
-# recommendations/scorer.py
+"""
+TeamBuilder — движок рекомендаций
+==================================
+
+КАК ЭТО РАБОТАЕТ:
+-----------------
+Руководитель заполняет "Идеальный профиль" — описывает кого ищет:
+  - Что будет делать человек (функции роли)
+  - Насколько важны D/I/S/C качества (слайдеры)
+  - Предпочитаемый тип мотивации по Герчикову
+  - Возрастной диапазон
+  - Свой стиль управления
+
+Система берёт всех активных сотрудников из базы и считает
+score совпадения по 5 осям. Каждая ось — число от 0 до 1.
+Итоговый балл = взвешенная сумма → умножается на 100.
+
+5 ОСЕЙ И ВЕСА:
+  disc_fit       35% — насколько DISC сотрудника совпадает с желаемым
+  motivation_fit 30% — мотивация по Герчикову vs функции роли
+  gerchikov_pref 15% — прямое совпадение типа мотивации с предпочтением
+  gen_style_fit  12% — совместимость поколения с стилем управления
+  age_fit         8% — попадание в возрастной диапазон
+
+ПОЧЕМУ ТАКИЕ ВЕСА:
+  DISC — самый предсказуемый маркер поведения, поэтому 35%
+  Мотивация — ключ к тому будет ли человек реально работать, 30%+15%
+  Поколение — важно но не критично, 12%
+  Возраст — мягкий фильтр, не жёсткий, 8%
+
+ОБЪЯСНЕНИЯ:
+  Каждый кандидат получает список текстовых объяснений на русском —
+  руководитель видит не просто "87%" а почему именно этот человек подходит
+  или не подходит по каждому параметру.
+
+СТАЛИ БЫ ИСПОЛЬЗОВАТЬ РУКОВОДИТЕЛИ?
+  Да, если:
+  - Видят конкретные имена с объяснениями, а не абстрактные проценты
+  - Могут быстро заполнить профиль (5-7 полей, не анкета на 30 вопросов)
+  - Результат совпадает с их интуицией хотя бы в 7 из 10 случаев
+  - Есть возможность дать обратную связь ("взял / отклонил") — это улучшает систему
+
+  Риски отторжения:
+  - "Алгоритм не знает людей" — поэтому объяснения важнее цифры
+  - Мало сотрудников в базе → нет смысла → нужен онбординг всей команды
+"""
+
 import math
 from profiles.models import Employee
 
 
+
+MOTIV_FUNCTION_FIT = {
+    'instrumental': {
+        'sells': 0.95, 'negotiates': 0.90, 'leads': 0.70,
+        'creates': 0.50, 'analyzes': 0.45, 'supports': 0.30,
+        'processes': 0.25, 'recruits': 0.35,
+    },
+    'professional': {
+        'creates': 0.95, 'analyzes': 0.90, 'leads': 0.60,
+        'sells': 0.50, 'supports': 0.60, 'negotiates': 0.55,
+        'processes': 0.55, 'recruits': 0.55,
+    },
+    'patriotic': {
+        'recruits': 0.95, 'supports': 0.90, 'leads': 0.75,
+        'processes': 0.70, 'analyzes': 0.55, 'sells': 0.45,
+        'creates': 0.50, 'negotiates': 0.50,
+    },
+    'administrative': {
+        'leads': 0.90, 'processes': 0.85, 'recruits': 0.70,
+        'analyzes': 0.60, 'negotiates': 0.65, 'supports': 0.50,
+        'sells': 0.40, 'creates': 0.35,
+    },
+    'master': {
+        'leads': 0.95, 'creates': 0.85, 'analyzes': 0.80,
+        'negotiates': 0.70, 'sells': 0.60, 'recruits': 0.45,
+        'supports': 0.30, 'processes': 0.25,
+    },
+    'mixed': {
+        'sells': 0.60, 'analyzes': 0.60, 'supports': 0.60,
+        'leads': 0.65, 'creates': 0.60, 'processes': 0.55,
+        'recruits': 0.60, 'negotiates': 0.60,
+    },
+}
+
+
+GERCHIKOV_COMPAT = {
+    ('instrumental', 'instrumental'): 1.00,
+    ('instrumental', 'master'):       0.85,
+    ('instrumental', 'professional'): 0.65,
+    ('instrumental', 'administrative'):0.55,
+    ('instrumental', 'patriotic'):    0.40,
+    ('instrumental', 'mixed'):        0.60,
+
+    ('professional', 'professional'): 1.00,
+    ('professional', 'master'):       0.75,
+    ('professional', 'instrumental'): 0.70,
+    ('professional', 'patriotic'):    0.55,
+    ('professional', 'administrative'):0.45,
+    ('professional', 'mixed'):        0.60,
+
+    ('patriotic', 'patriotic'):       1.00,
+    ('patriotic', 'administrative'):  0.75,
+    ('patriotic', 'professional'):    0.55,
+    ('patriotic', 'mixed'):           0.60,
+    ('patriotic', 'instrumental'):    0.35,
+    ('patriotic', 'master'):          0.40,
+
+    ('administrative', 'administrative'): 1.00,
+    ('administrative', 'patriotic'):  0.75,
+    ('administrative', 'professional'):0.55,
+    ('administrative', 'mixed'):      0.60,
+    ('administrative', 'instrumental'):0.45,
+    ('administrative', 'master'):     0.50,
+
+    ('master', 'master'):             1.00,
+    ('master', 'instrumental'):       0.85,
+    ('master', 'professional'):       0.70,
+    ('master', 'administrative'):     0.50,
+    ('master', 'patriotic'):          0.40,
+    ('master', 'mixed'):              0.60,
+}
+
+
+GEN_STYLE_FIT = {
+    ('Z',     'authoritarian'): 0.15,
+    ('Z',     'democratic'):    0.75,
+    ('Z',     'coaching'):      0.95,
+    ('Z',     'delegating'):    0.60,
+
+    ('Y',     'authoritarian'): 0.35,
+    ('Y',     'democratic'):    0.90,
+    ('Y',     'coaching'):      0.85,
+    ('Y',     'delegating'):    0.75,
+
+    ('X',     'authoritarian'): 0.65,
+    ('X',     'democratic'):    0.72,
+    ('X',     'coaching'):      0.60,
+    ('X',     'delegating'):    0.92,
+
+    ('Alpha', 'authoritarian'): 0.10,
+    ('Alpha', 'democratic'):    0.70,
+    ('Alpha', 'coaching'):      0.95,
+    ('Alpha', 'delegating'):    0.55,
+
+    ('BB', 'authoritarian'): 0.85,
+    ('BB', 'delegating'):    0.80,
+    ('BB', 'democratic'):    0.60,
+    ('BB', 'coaching'):      0.45,
+}
+
+
+WEIGHTS = {
+    'disc_fit':       0.35,
+    'motivation_fit': 0.30,
+    'gerchikov_pref': 0.15,
+    'gen_style_fit':  0.12,
+    'age_fit':        0.08,
+}
+
+
 class EmployeeScorer:
-    """Класс для оценки соответствия сотрудника идеальному профилю"""
-    
+
     def __init__(self, ideal_profile):
         self.ideal = ideal_profile
-        
-    def calculate_match_score(self, employee):
-        """Рассчитывает общий процент соответствия (0-100)"""
-        scores = {
-            'disc': self._score_disc(employee) * 0.35,     
-            'age': self._score_age(employee) * 0.10,   
-            'generation': self._score_generation(employee) * 0.10,
-            'gerchikov': self._score_gerchikov(employee) * 0.20,
-            'role_functions': self._score_role_functions(employee) * 0.25,
+
+    def score(self, employee: Employee) -> dict:
+        """
+        Возвращает dict:
+          total       — итоговый балл 0-100
+          axes        — баллы по каждой оси 0-1
+          explanation — список строк объяснений на русском
+        """
+        axes = {
+            'disc_fit':       self._disc_fit(employee),
+            'motivation_fit': self._motivation_fit(employee),
+            'gerchikov_pref': self._gerchikov_pref(employee),
+            'gen_style_fit':  self._gen_style_fit(employee),
+            'age_fit':        self._age_fit(employee),
         }
-        
-        total = sum(scores.values())
-        breakdown = {k: round(v * 100, 1) for k, v in scores.items()}
-        
-        return round(total, 1), breakdown
-    
-    def _score_disc(self, employee):
-        """Оценка DISC-профиля (0-1)"""
-        if not employee.disc_scores or not self.ideal.disc_preferred:
+
+        total = sum(axes[k] * WEIGHTS[k] for k in axes) * 100
+
+        return {
+            'employee':    employee,
+            'total':       round(total, 1),
+            'axes':        {k: round(v, 3) for k, v in axes.items()},
+            'explanation': self._explain(axes, employee),
+        }
+
+    def _disc_fit(self, employee) -> float:
+        ideal = self.ideal.disc_preferred or {}
+        real  = employee.disc_scores or {}
+
+        if not ideal or not real:
             return 0.5
-        
-        disc_ideal = self.ideal.disc_preferred
-        disc_real = employee.disc_scores
-        
-        dot_product = sum(disc_ideal.get(k, 0) * disc_real.get(k, 0) for k in 'DISC')
-        norm_ideal = math.sqrt(sum(v ** 2 for v in disc_ideal.values()))
-        norm_real = math.sqrt(sum(v ** 2 for v in disc_real.values()))
-        
-        if norm_ideal == 0 or norm_real == 0:
+
+        keys = ['D', 'I', 'S', 'C']
+        dot   = sum(ideal.get(k, 0) * real.get(k, 0) for k in keys)
+        n_i   = math.sqrt(sum(ideal.get(k, 0) ** 2 for k in keys)) or 1
+        n_r   = math.sqrt(sum(real.get(k,  0) ** 2 for k in keys)) or 1
+
+        cosine = dot / (n_i * n_r)
+
+        # Бонус если ведущий тип совпадает с предпочитаемыми типами личности
+        preferred = self.ideal.preferred_personality_types or []
+        emp_primary = max(real, key=real.get) if real else None
+        bonus = 0.08 if emp_primary and emp_primary in preferred else 0.0
+
+        return min(1.0, max(0.0, cosine + bonus))
+
+
+    def _motivation_fit(self, employee) -> float:
+        motiv     = employee.gerchikov_type or 'mixed'
+        functions = self.ideal.role_functions or []
+
+        if not functions:
             return 0.5
-        
-        similarity = dot_product / (norm_ideal * norm_real)
-        return max(0, min(1, similarity))
-    
-    def _score_age(self, employee):
-        """Оценка возраста (0-1)"""
-        if not employee.age:
+
+        motiv_map = MOTIV_FUNCTION_FIT.get(motiv, MOTIV_FUNCTION_FIT['mixed'])
+        scores    = [motiv_map.get(fn, 0.35) for fn in functions]
+        return round(sum(scores) / len(scores), 3)
+
+
+    def _gerchikov_pref(self, employee) -> float:
+        pref  = self.ideal.gerchikov_preferred
+        motiv = employee.gerchikov_type
+
+        if not pref or not motiv:
             return 0.5
-        
+
+        return GERCHIKOV_COMPAT.get((motiv, pref), 0.40)
+
+
+    def _gen_style_fit(self, employee) -> float:
+        gen   = employee.generation
+        style = self.ideal.leadership_style
+
+        if not gen or not style:
+            return 0.5
+
+        return GEN_STYLE_FIT.get((gen, style), 0.5)
+
+    def _age_fit(self, employee) -> float:
+        age     = employee.age
         age_min = self.ideal.age_min or 18
         age_max = self.ideal.age_max or 65
-        
-        if age_min <= employee.age <= age_max:
+
+        if not age:
+            return 0.5
+
+        if age_min <= age <= age_max:
             return 1.0
-        elif employee.age < age_min:
-            return max(0, 1 - (age_min - employee.age) / age_min)
+        elif age < age_min:
+            # Штраф пропорционален отклонению, но не обнуляем
+            return max(0.1, 1.0 - (age_min - age) * 0.08)
         else:
-            return max(0, 1 - (employee.age - age_max) / 50)
-    
-    def _score_generation(self, employee):
-        """Оценка поколения (0-1)"""
-        if not employee.generation or not self.ideal.generation_preferred:
-            return 0.5
-        
-        return 1.0 if employee.generation == self.ideal.generation_preferred else 0.0
-    
-    def _score_gerchikov(self, employee):
-        """Оценка мотивации по Герчикову (0-1)"""
-        if not employee.gerchikov_type or not self.ideal.gerchikov_preferred:
-            return 0.5
-        
-        # Словарь совместимости мотивационных типов
-        compatibility = {
-            ('instrumental', 'instrumental'): 1.0,
-            ('instrumental', 'professional'): 0.7,
-            ('instrumental', 'patriotic'): 0.5,
-            ('instrumental', 'administrative'): 0.6,
-            ('instrumental', 'master'): 0.8,
-            
-            ('professional', 'professional'): 1.0,
-            ('professional', 'instrumental'): 0.8,
-            ('professional', 'patriotic'): 0.6,
-            ('professional', 'master'): 0.7,
-            
-            ('patriotic', 'patriotic'): 1.0,
-            ('patriotic', 'administrative'): 0.8,
-            ('patriotic', 'professional'): 0.6,
-            
-            ('administrative', 'administrative'): 1.0,
-            ('administrative', 'patriotic'): 0.7,
-            
-            ('master', 'master'): 1.0,
-            ('master', 'instrumental'): 0.9,
-        }
-        
-        key = (employee.gerchikov_type, self.ideal.gerchikov_preferred)
-        return compatibility.get(key, 0.4)
-    
-    def _score_role_functions(self, employee):
-        """
-        Оценка соответствия функций роли.
-        """
-        ideal_functions = set(self.ideal.role_functions or [])
-        
-        if not ideal_functions or not employee.disc_scores:
-            return self._score_disc(employee)
-        
-        disc = employee.disc_scores or {'D': 25, 'I': 25, 'S': 25, 'C': 25}
-        max_disc = max(disc, key=disc.get)
-        
-        disc_to_functions = {
-            'D': {'sells', 'leads', 'negotiates'},
-            'I': {'sells', 'negotiates', 'recruits'},
-            'S': {'supports', 'processes'},
-            'C': {'analyzes', 'processes', 'creates'},
-        }
-        
-        employee_functions = disc_to_functions.get(max_disc, set())
-        
-        if not employee_functions:
-            return 0.5
-        
-        # Jaccard similarity (пересечение / объединение)
-        intersection = len(ideal_functions & employee_functions)
-        union = len(ideal_functions | employee_functions)
-        
-        return intersection / union if union > 0 else 0.0
+            return max(0.1, 1.0 - (age - age_max) * 0.08)
 
+    def _explain(self, axes: dict, employee: Employee) -> list:
+        lines = []
+        real  = employee.disc_scores or {}
+        motiv = employee.gerchikov_type or 'mixed'
+        gen   = employee.generation or '?'
 
-def get_recommendations(ideal_profile, limit=10):
+        MOTIV_LABELS = {
+            'instrumental':   'ориентирован на результат и доход',
+            'professional':   'стремится к профессиональному росту',
+            'patriotic':      'ценит причастность и командную атмосферу',
+            'administrative': 'ценит статус, стабильность и должность',
+            'master':         'предпочитает автономию и ответственность',
+            'mixed':          'смешанный тип мотивации',
+        }
+
+        GEN_LABELS = {
+            'X': 'Поколение X — самостоятельные, привыкли к ответственности',
+            'Y': 'Поколение Y — ценят смысл, гибкость и развитие',
+            'Z': 'Поколение Z — диджитал-нативы, нужен коучинг и честность',
+            'Alpha': 'Поколение Alpha — гиперперсонализация и технологии',
+        }
+
+        # DISC
+        d = axes['disc_fit']
+        emp_primary = max(real, key=real.get) if real else '?'
+        if d >= 0.80:
+            lines.append(f"DISC-профиль хорошо совпадает с вашим идеалом (ведущий тип: {emp_primary})")
+        elif d >= 0.55:
+            lines.append(f"DISC частично совпадает — тип {emp_primary}, есть отклонения от идеала")
+        else:
+            lines.append(f"DISC-профиль далёк от идеального (тип {emp_primary})")
+
+        # Мотивация + функции
+        mf = axes['motivation_fit']
+        lines.append(f"💡 Мотивация: {MOTIV_LABELS.get(motiv, motiv)}")
+        if mf >= 0.80:
+            lines.append(f"Мотивационный профиль хорошо подходит для функций этой роли")
+        elif mf >= 0.55:
+            lines.append(f"Мотивация частично совпадает с функциями роли")
+        else:
+            lines.append(f"Мотивация плохо совпадает с функциями роли — риск выгорания")
+
+        # Тип мотивации напрямую
+        gp = axes['gerchikov_pref']
+        if self.ideal.gerchikov_preferred:
+            if gp >= 0.85:
+                lines.append(f"Тип мотивации совпадает с предпочитаемым")
+            elif gp <= 0.45:
+                lines.append(f"Тип мотивации отличается от предпочитаемого вами")
+
+        # Поколение
+        gs = axes['gen_style_fit']
+        lines.append(f"{GEN_LABELS.get(gen, gen)}")
+        if gs >= 0.85:
+            lines.append(f"Поколение отлично совместимо с вашим стилем управления")
+        elif gs <= 0.35:
+            lines.append(f"Поколение {gen} может плохо воспринять ваш стиль — нужна адаптация")
+
+        # Возраст
+        af = axes['age_fit']
+        age_min = self.ideal.age_min or 18
+        age_max = self.ideal.age_max or 65
+        if af == 1.0:
+            lines.append(f"Возраст ({employee.age}) в нужном диапазоне {age_min}–{age_max}")
+        elif af < 0.5:
+            lines.append(f"Возраст ({employee.age}) выходит за диапазон {age_min}–{age_max}")
+
+        # Зарплатные ожидания
+        sal = (employee.salary_block or {}).get('min', 0)
+        if sal:
+            lines.append(f"Минимальная зарплата: {sal:,} ₽".replace(',', ' '))
+
+        return lines
+
+def get_recommendations(ideal_profile, limit: int = 10) -> list:
     """
-    Возвращает топ-N сотрудников, отсортированных по соответствию
+    Возвращает топ-N сотрудников отсортированных по total score.
+    Берёт всех активных кандидатов — фильтрация только мягкая через score.
     """
-    scorer = EmployeeScorer(ideal_profile)
+    scorer     = EmployeeScorer(ideal_profile)
     candidates = Employee.objects.filter(is_active_candidate=True)
-    
+
     results = []
-    for employee in candidates:
-        score, breakdown = scorer.calculate_match_score(employee)
-        results.append({
-            'employee': employee,
-            'score': score,
-            'breakdown': breakdown,
-        })
-    
-    # Сортировка по убыванию балла
-    results.sort(key=lambda x: x['score'], reverse=True)
-    
+    for emp in candidates:
+        result = scorer.score(emp)
+        results.append(result)
+
+    results.sort(key=lambda x: x['total'], reverse=True)
     return results[:limit]
