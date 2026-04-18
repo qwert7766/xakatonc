@@ -133,22 +133,35 @@ class EmployeeScorer:
         ideal = self.ideal.disc_preferred or {}
         real  = employee.disc_scores or {}
  
-        if not ideal or not real:
-            return 0.5
- 
         keys = ['D', 'I', 'S', 'C']
  
-        # 1. Косинусное сходство — совпадение формы профиля (50% веса)
+        # Если DISC не заполнен или все нули — возвращаем 0
+        if not ideal or not real:
+            return 0.0
+        if sum(real.get(k, 0) for k in keys) == 0:
+            return 0.0
+ 
+        # 1. Косинусное сходство — совпадение формы профиля (20% веса)
         dot    = sum(ideal.get(k, 0) * real.get(k, 0) for k in keys)
         n_i    = math.sqrt(sum(ideal.get(k, 0) ** 2 for k in keys)) or 1
         n_r    = math.sqrt(sum(real.get(k,  0) ** 2 for k in keys)) or 1
         cosine = dot / (n_i * n_r)
  
-        # 2. Близость абсолютных значений — MAE (50% веса)
-        # Если идеал D=80 а сотрудник D=30 — это штрафуется
-        # mae в диапазоне 0-100 → нормализуем и инвертируем
-        mae       = sum(abs(ideal.get(k, 0) - real.get(k, 0)) for k in keys) / len(keys)
-        proximity = max(0.0, 1.0 - mae / 100)
+        # 2. Взвешенная близость по каждой букве
+        # Для каждой буквы: насколько реальное значение близко к идеальному
+        # Нормируем отклонение относительно идеального значения (а не от 100)
+        weighted_diffs = []
+        for k in keys:
+            i_val = ideal.get(k, 0)
+            r_val = real.get(k, 0)
+            if i_val == 0:
+                # Если идеал 0 — любое значение не штрафуем
+                weighted_diffs.append(1.0)
+            else:
+                # Отклонение относительно идеала: 0=идеально, 1=полностью не совпадает
+                diff = abs(i_val - r_val) / i_val
+                weighted_diffs.append(max(0.0, 1.0 - diff))
+        proximity = sum(weighted_diffs) / len(weighted_diffs)
  
         score = cosine * 0.2 + proximity * 0.8
  
