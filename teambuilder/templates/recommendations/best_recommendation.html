@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Рекомендации — {{ ideal.target_role }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        .hero-banner {
+            background: var(--black);
+            padding: 48px 40px;
+            position: relative;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 5px;
+            background: var(--pink);
+        }
+        .recommendations-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .recommendation-card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 24px 32px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 24px;
+            align-items: center;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .score-badge {
+            width: 80px;
+            text-align: center;
+        }
+        .score-value {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--pink);
+        }
+        .score-label {
+            font-size: 11px;
+            color: var(--gray-text);
+            letter-spacing: 1px;
+        }
+        .employee-info {
+            flex: 1;
+        }
+        .employee-name {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .employee-meta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .meta-tag {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+        .meta-tag strong {
+            color: var(--black);
+        }
+        .disc-badge {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 16px;
+        }
+        .disc-letter {
+            width: 28px;
+            height: 28px;
+            background: var(--gray-bg);
+            border-radius: 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+        }
+        .disc-letter.high {
+            background: var(--pink);
+            color: white;
+        }
+        .breakdown {
+            font-size: 11px;
+            color: var(--gray-text);
+            margin-top: 8px;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 11px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: var(--white);
+            border-radius: 4px;
+        }
+        .ideal-summary {
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            padding: 16px 24px;
+            margin-top: 16px;
+        }
+        .ideal-summary p {
+            margin: 4px 0;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pink);
+            color: var(--white);
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 13px 24px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-primary:hover { background: #ff1a80; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+        <nav class="header-nav">
+            <a href="{% url 'create_ideal_profile' %}" class="nav-link">← Новый профиль</a>
+            <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+        </nav>
+    </header>
+
+    <div class="hero-banner">
+        <div class="hero-inner" style="max-width: 1100px; margin: 0 auto;">
+            <p class="hero-eyebrow">Рекомендации</p>
+            <h1 class="hero-title">Лучшие кандидаты</h1>
+            <p class="hero-desc">Для роли: <strong>{{ ideal.target_role }}</strong></p>
+            
+            <div class="ideal-summary">
+                <p>🎯 Идеальный DISC: D={{ ideal.disc_preferred.D }}% / I={{ ideal.disc_preferred.I }}% / S={{ ideal.disc_preferred.S }}% / C={{ ideal.disc_preferred.C }}%</p>
+                <p>📊 Возраст: {{ ideal.age_min }}–{{ ideal.age_max }} лет</p>
+                {% if ideal.gerchikov_preferred %}
+                <p>💡 Мотивация: {{ ideal.get_gerchikov_preferred_display }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <main class="page" style="max-width: 1100px;">
+        {% if recommendations %}
+            <div class="recommendations-grid">
+                {% for rec in recommendations %}
+                    <div class="recommendation-card">
+                        <div class="score-badge">
+                            <div class="score-value">{{ rec.score }}%</div>
+                            <div class="score-label">соответствие</div>
+                        </div>
+                        
+                        <div class="employee-info">
+                            <div class="employee-name">{{ rec.employee.fio }}</div>
+                            <div class="employee-meta">
+                                <span class="meta-tag"><strong>Возраст:</strong> {{ rec.employee.age }} лет</span>
+                                <span class="meta-tag"><strong>Поколение:</strong> {{ rec.generation_display }}</span>
+                                <span class="meta-tag"><strong>Мотивация:</strong> {{ rec.gerchikov_display }}</span>
+                                
+                                {% if rec.employee.disc_scores %}
+                                    <div class="disc-badge">
+                                        <span class="disc-letter {% if rec.disc_d >= 60 %}high{% endif %}">D</span>
+                                        <span class="disc-letter {% if rec.disc_i >= 60 %}high{% endif %}">I</span>
+                                        <span class="disc-letter {% if rec.disc_s >= 60 %}high{% endif %}">S</span>
+                                        <span class="disc-letter {% if rec.disc_c >= 60 %}high{% endif %}">C</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="breakdown">
+                                DISC: {{ rec.breakdown.disc }}% | Возраст: {{ rec.breakdown.age }}% | 
+                                Мотивация: {{ rec.breakdown.gerchikov }}% | Функции: {{ rec.breakdown.role_functions }}%
+                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <form method="post" action="{% url 'save_recommendation_status' ideal.id rec.employee.id %}">
+                                {% csrf_token %}
+                                <select name="status" class="meta-tag" style="padding: 8px;">
+                                    <option value="good">👍 Хороший</option>
+                                    <option value="average">📊 Средний</option>
+                                    <option value="taken">✅ Взять в команду</option>
+                                    <option value="rejected">❌ Отклонить</option>
+                                </select>
+                                <button type="submit" class="btn-primary btn-sm">Сохранить</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>Нет сотрудников, соответствующих критериям</p>
+                <p class="meta-tag">Попробуйте расширить параметры поиска</p>
+                <a href="{% url 'create_ideal_profile' %}" class="btn-primary" style="margin-top: 20px;">Создать новый профиль</a>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>

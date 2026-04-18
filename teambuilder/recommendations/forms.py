@@ -5,7 +5,7 @@ from .models import IdealProfile, ROLE_FUNCTION_CHOICES, LEADERSHIP_STYLE_CHOICE
 
 class IdealProfileForm(forms.ModelForm):
 
-    #Роль
+    # Роль
     target_role = forms.CharField(
         max_length=200,
         label="Название роли / позиции",
@@ -15,7 +15,7 @@ class IdealProfileForm(forms.ModelForm):
         })
     )
 
-    #Функции роли
+    # Функции роли
     role_functions = forms.MultipleChoiceField(
         choices=ROLE_FUNCTION_CHOICES,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
@@ -24,7 +24,7 @@ class IdealProfileForm(forms.ModelForm):
         help_text="Выбери всё подходящее — на основе этого подберём мотивационный профиль"
     )
 
-    #DISC слайдеры
+    # DISC слайдеры
     disc_d = forms.IntegerField(
         min_value=0, max_value=100, initial=50,
         label="D — Доминантность",
@@ -50,7 +50,7 @@ class IdealProfileForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'})
     )
 
-    #Мотивация по Герчикову
+    # Мотивация по Герчикову
     gerchikov_preferred = forms.ChoiceField(
         choices=[('', '— не важно —')] + list(GERCHIKOV_CHOICES),
         required=False,
@@ -59,7 +59,7 @@ class IdealProfileForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-    #Стиль управления
+    # Стиль управления
     leadership_style = forms.ChoiceField(
         choices=LEADERSHIP_STYLE_CHOICES,
         required=True,
@@ -68,7 +68,7 @@ class IdealProfileForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-    #Возраст
+    # Возраст
     age_min = forms.IntegerField(
         min_value=18, max_value=70, initial=25,
         label="Возраст от",
@@ -80,7 +80,7 @@ class IdealProfileForm(forms.ModelForm):
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
 
-    #Мотивационный стиль
+    # Мотивационный стиль
     motivation_style = forms.CharField(
         required=False,
         label="Как планируете мотивировать сотрудника?",
@@ -91,7 +91,7 @@ class IdealProfileForm(forms.ModelForm):
         })
     )
 
-    #Подбор в существующую команду
+    # Подбор в существующую команду
     is_for_existing_team = forms.BooleanField(
         required=False,
         label="Подбор в уже существующую команду?"
@@ -106,15 +106,19 @@ class IdealProfileForm(forms.ModelForm):
             'is_for_existing_team', 'team',
         ]
 
-    def __init__(self, *args, manager=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        manager = kwargs.pop('manager', None)
+        
+        # Вызываем родительский __init__
         super().__init__(*args, **kwargs)
-
+        
+        # Если передан manager, настраиваем поле team
         if manager:
             self.fields['team'].queryset = manager.teams.all()
             self.fields['team'].required = False
-            self.fields['team'].label = "Выбери команду"
+            self.fields['team'].label = "Выберите команду (если подбор в существующую)"
             self.fields['team'].widget.attrs['class'] = 'form-select'
-
+        
         if self.instance and self.instance.pk and self.instance.disc_preferred:
             dp = self.instance.disc_preferred
             self.initial.update({
@@ -154,4 +158,5 @@ class IdealProfileForm(forms.ModelForm):
 
         if commit:
             instance.save()
+            self.save_m2m()
         return instance
