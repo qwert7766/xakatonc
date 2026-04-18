@@ -117,8 +117,8 @@
 
                         <div class="field">
                             <span class="field-label">Поколение</span>
-                            <span class="field-value {% if not user.get_generation_display %}empty{% endif %}">
-                                {{ user.get_generation_display|default:"Не указано" }}
+                            <span class="field-value {% if not user.generation %}empty{% endif %}">
+                                {{ user.get_generation_display|default:"Будет определено после указания возраста" }}
                             </span>
                         </div>
 

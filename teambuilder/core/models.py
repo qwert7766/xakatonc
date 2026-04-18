@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
- 
+from datetime import date
+
 GERCHIKOV_CHOICES = [
     ('instrumental',   'Инструментальный (деньги / результат)'),
     ('professional',   'Профессиональный (рост / мастерство)'),
@@ -11,10 +12,11 @@ GERCHIKOV_CHOICES = [
 ]
  
 GENERATION_CHOICES = [
-    ('X',     'Поколение X (1965–1980)'),
-    ('Y',     'Поколение Y / Миллениалы (1981–1996)'),
-    ('Z',     'Поколение Z (1997–2012)'),
-    ('Alpha', 'Поколение Alpha (2013+)'),
+    ('X',      'Поколение X (1965–1980)'),
+    ('BB',     'Бэби-бумеры (1944–1964)'),
+    ('Y',      'Поколение Y / Миллениалы (1981–1996)'),
+    ('Z',      'Поколение Z (1997–2012)'),
+    ('Alpha',  'Поколение Alpha (2013+)'),
 ]
  
  
@@ -77,3 +79,39 @@ class CustomUser(AbstractUser):
         if not profile:
             return '—'
         return max(profile, key=profile.get)
+
+    def calculate_generation_by_age(self):
+        """Вычисляет поколение по возрасту"""
+        if not self.age:
+            return None
+        
+        current_year = date.today().year
+        birth_year = current_year - self.age
+        
+        if birth_year >= 2013:
+            return 'Alpha'
+        elif birth_year >= 1997:
+            return 'Z'
+        elif birth_year >= 1981:
+            return 'Y'
+        elif birth_year >= 1965:
+            return 'X'
+        elif birth_year >= 1944:
+            return 'BB'
+        else:
+            return None  # Старше бэби-бумеров
+
+    def save(self, *args, **kwargs):
+        if self.age:
+            self.generation = self.calculate_generation_by_age()
+        super().save(*args, **kwargs)
+    
+    def get_generation_display(self):
+        generations = {
+            'X': 'Поколение X (1965–1980)',
+            'BB': 'Бэби-бумеры (1944–1964)',
+            'Y': 'Поколение Y / Миллениалы (1981–1996)',
+            'Z': 'Поколение Z (1997–2012)',
+            'Alpha': 'Поколение Alpha (2013+)',
+        }
+        return generations.get(self.generation, self.generation or 'Не указано')

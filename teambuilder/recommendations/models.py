@@ -1,4 +1,3 @@
-# recommendations/models.py
 from django.db import models
 from core.models import CustomUser, GERCHIKOV_CHOICES, GENERATION_CHOICES
  

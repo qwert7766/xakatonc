@@ -10,7 +10,6 @@ class ProfileEditForm(forms.ModelForm):
             "first_name",
             "email",
             "age",
-            "generation",
             "gerchikov_type",
             "leadership_style",
         ]
@@ -18,7 +17,6 @@ class ProfileEditForm(forms.ModelForm):
             "first_name": "Полное имя",
             "email": "Email",
             "age": "Возраст",
-            "generation": "Поколение",
             "gerchikov_type": "Тип мотивации",
             "leadership_style": "Стиль управления",
         }

@@ -111,6 +111,11 @@ class IdealProfileForm(forms.ModelForm):
         
         super().__init__(*args, **kwargs)
         
+        if manager and manager.leadership_style:
+            self.initial['leadership_style'] = manager.leadership_style
+            self.fields['leadership_style'].disabled = True
+            self.fields['leadership_style'].help_text = f"Стиль управления взят из вашего профиля: {dict(LEADERSHIP_STYLE_CHOICES).get(manager.leadership_style, manager.leadership_style)}"
+        
         if manager:
             self.fields['team'].queryset = manager.teams.all()
             self.fields['team'].required = False
