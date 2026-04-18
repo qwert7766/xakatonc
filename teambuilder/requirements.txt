@@ -1,5 +1,5 @@
 asgiref==3.11.1
-Django
+Django==3.2.16
 django-htmx
 pillow==12.2.0
 pytz==2026.1.post1

@@ -12,11 +12,11 @@ from profiles.views import (
 )
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home_view, name='home'),
  
     # Авторизация руководителя
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', logout_view, name='logout'),
+    path('', home_view, name='home'),
  
     # Кабинет руководителя
     path('profile/', profile_view, name='profile'),

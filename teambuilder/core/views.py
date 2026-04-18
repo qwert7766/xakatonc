@@ -1,7 +1,8 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login as auth_login
 from .forms import ProfileEditForm
 from profiles.forms import DiscTestForm
 
@@ -42,7 +43,27 @@ def logout_view(request):
     logout(request)
     return redirect("login")
 
-@login_required
 def home_view(request):
-    teams = request.user.teams.all() if request.user.is_authenticated else []
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            auth_login(request, user)
+            return redirect('home')
+        else:
+            form = AuthenticationForm()
+            return render(request, 'home.html', {
+                'form': form, 
+                'teams': [], 
+                'error': 'Неверное имя пользователя или пароль'
+            })
+    
+    if not request.user.is_authenticated:
+        form = AuthenticationForm()
+        return render(request, 'home.html', {'form': form, 'teams': []})
+    
+    teams = request.user.teams.all() if hasattr(request.user, 'teams') else []
     return render(request, 'home.html', {'teams': teams})
+
