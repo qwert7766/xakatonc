@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISC-тест профиля — t2 Team Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --pink: #ff3495;
+            --gray-bg: #f2f2f2;
+            --gray-text: #666666;
+            --border: #e0e0e0;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-bg);
+            color: var(--black);
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-img { height: 44px; }
+        .logo-app-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 40px;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 32px 36px;
+        }
+        .eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 10px;
+        }
+        .title {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 42px;
+            text-transform: uppercase;
+            line-height: 0.95;
+            margin-bottom: 12px;
+        }
+        .desc {
+            color: var(--gray-text);
+            margin-bottom: 24px;
+        }
+        .question {
+            padding: 18px 0;
+            border-top: 1px solid var(--border);
+        }
+        .question label {
+            display: block;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .question ul {
+            list-style: none;
+            padding: 0;
+        }
+        .question li {
+            margin-bottom: 8px;
+        }
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn-primary,
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 13px 24px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--pink);
+            color: var(--white);
+            border: none;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--black);
+            border: 2px solid var(--black);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+    </header>
+
+    <main class="page">
+        <div class="card">
+            <p class="eyebrow">Профиль</p>
+            <h1 class="title">Пройти<br>DISC-тест</h1>
+            <p class="desc">Ответьте на вопросы, чтобы сохранить DISC-профиль в вашем кабинете.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="question">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <div style="color: #c81e1e;">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="actions">
+                    <button type="submit" class="btn-primary">Сохранить тест</button>
+                    <a href="{% url 'profile' %}" class="btn-secondary">Назад</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

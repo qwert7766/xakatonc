@@ -1,0 +1,482 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISC-тест — t2 Team Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --pink: #FF3495;
+            --gray-bg: #F2F2F2;
+            --gray-text: #666666;
+            --border: #E0E0E0;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-bg);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 44px;
+            width: auto;
+            display: block;
+        }
+
+        .logo-app-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-label {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .hero-banner {
+            background: var(--black);
+            padding: 48px 40px 44px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: 'DISC';
+            position: absolute;
+            right: 40px;
+            bottom: -50px;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 200px;
+            color: rgba(255,255,255,0.04);
+            letter-spacing: -8px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 5px;
+            background: var(--pink);
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 52px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 0.92;
+            color: var(--white);
+            margin-bottom: 14px;
+        }
+
+        .hero-name {
+            font-size: 15px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .hero-name strong {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .disc-legend {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .disc-chip {
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 20px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .steps-bar {
+            background: rgba(255,255,255,0.06);
+            height: 4px;
+            margin-top: 28px;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .steps-bar-fill {
+            height: 100%;
+            background: var(--pink);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 40px;
+        }
+
+        .test-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .test-meta-label {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+        }
+
+        .test-counter {
+            font-family: var(--font-heading);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--gray-text);
+        }
+
+        .question-card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 36px 44px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.15s;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .question-num {
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            margin-bottom: 20px;
+            line-height: 1.15;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s;
+        }
+
+        .option-item:hover {
+            border-color: var(--black);
+            background: #FAFAFA;
+        }
+
+        .option-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--pink);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .option-item:has(input:checked) {
+            border-color: var(--pink);
+            background: #FFF5F9;
+        }
+
+        .option-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--black);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--black);
+            border: 1.5px solid var(--border);
+            border-radius: 2px;
+            padding: 12px 16px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.15s;
+            appearance: none;
+        }
+
+        select:focus, input:focus, textarea:focus { border-color: var(--black); }
+
+        .question ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .question ul li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: border-color 0.12s;
+        }
+
+        .question ul li:hover { border-color: var(--black); }
+
+        .question ul li label {
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .question label {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 18px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .submit-block {
+            background: var(--black);
+            border-radius: 4px;
+            padding: 36px 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .submit-text {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 360px;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--pink);
+            color: var(--white);
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 2px;
+            padding: 18px 40px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s, transform 0.15s;
+        }
+        .btn-submit:hover { background: #ff1a80; transform: translateY(-1px); }
+
+        @media (max-width: 768px) {
+            .hero-banner { padding: 32px 20px; }
+            .hero-inner { flex-direction: column; gap: 24px; }
+            .hero-title { font-size: 36px; }
+            .page { padding: 24px 20px; }
+            .question-card { padding: 24px 20px; }
+            .submit-block { flex-direction: column; gap: 20px; padding: 28px 24px; }
+            .btn-submit { justify-content: center; width: 100%; }
+            .header { padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="/" class="logo">
+             <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Бренд года" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+        <div class="header-right">
+            <span class="progress-label">Шаг 2 из 2</span>
+        </div>
+    </header>
+
+    <div class="hero-banner">
+        <div class="hero-inner">
+            <div>
+                <p class="hero-eyebrow">Психологическое тестирование</p>
+                <h1 class="hero-title">DISC-тест</h1>
+                <p class="hero-name">Сотрудник: <strong>{{ employee.fio }}</strong></p>
+            </div>
+            <div class="disc-legend">
+                <div class="disc-chip">D</div>
+                <div class="disc-chip">I</div>
+                <div class="disc-chip">S</div>
+                <div class="disc-chip">C</div>
+            </div>
+        </div>
+        <div class="steps-bar">
+            <div class="steps-bar-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <main class="page">
+
+        <div class="test-meta">
+            <span class="test-meta-label">Ответьте на все вопросы</span>
+            <span class="test-counter" id="counter">0 / 0 заполнено</span>
+        </div>
+
+        <form method="post" id="discForm">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="question-card question" data-index="{{ forloop.counter }}">
+                    <p class="question-num">Вопрос {{ forloop.counter }}</p>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--pink); font-size:12px; margin-top: 8px;">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="submit-block">
+                <p class="submit-text">После отправки вы увидите ваш DISC-профиль и доминирующий тип личности</p>
+                <button type="submit" class="btn-submit">Завершить тест →</button>
+            </div>
+        </form>
+
+    </main>
+
+    <script>
+        function updateProgress() {
+            const form = document.getElementById('discForm');
+            const questions = form.querySelectorAll('.question');
+            let filled = 0;
+
+            questions.forEach(q => {
+                const inputs = q.querySelectorAll('input, select, textarea');
+                let answered = false;
+                inputs.forEach(inp => {
+                    if ((inp.type === 'radio' || inp.type === 'checkbox') && inp.checked) answered = true;
+                    else if (inp.type !== 'radio' && inp.type !== 'checkbox' && inp.value.trim()) answered = true;
+                });
+                if (answered) filled++;
+            });
+
+            const total = questions.length;
+            const pct = total ? (filled / total * 100) : 0;
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('counter').textContent = filled + ' / ' + total + ' заполнено';
+        }
+
+        document.getElementById('discForm').addEventListener('change', updateProgress);
+        updateProgress();
+    </script>
+
+</body>
+</html>

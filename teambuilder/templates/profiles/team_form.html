@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }} — Team Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --black: #000; --white: #fff; --pink: #FF3495;
+            --gray-bg: #F2F2F2; --gray-text: #666; --border: #E0E0E0;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-bg);
+            color: var(--black);
+        }
+
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 44px;
+        }
+
+        .logo-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: .5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav a {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .5);
+            text-decoration: none;
+        }
+
+        .nav a:hover {
+            color: var(--white);
+        }
+
+        .hero {
+            background: var(--black);
+            padding: 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: var(--pink);
+        }
+
+        .eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 52px;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            color: var(--white);
+        }
+
+        .page {
+            max-width: 680px;
+            margin: 40px auto;
+            padding: 0 40px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 44px 48px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+        }
+
+        input,
+        textarea,
+        select {
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--black);
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 2px;
+            padding: 13px 16px;
+            outline: none;
+            width: 100%;
+            transition: border-color .15s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--black);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            background: var(--pink);
+            color: var(--white);
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 2px;
+            padding: 14px 28px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .btn:hover {
+            background: #ff1a80;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--black);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--black);
+            background: transparent;
+        }
+
+        .errors {
+            font-size: 12px;
+            color: var(--pink);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <a href="/" class="logo">
+        <img src="{% static 'img/logo.caf05db1.gif' %}" alt="t2" class="logo-img">
+        <span class="logo-name">Team Builder</span>
+    </a>
+    <nav class="nav">
+        <a href="{% url 'team_list' %}">← Команды</a>
+        <a href="{% url 'logout' %}">Выйти</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <div style="max-width:1100px;margin:0 auto;">
+        <p class="eyebrow">Команды</p>
+        <h1>{{ title }}</h1>
+    </div>
+</div>
+
+<main class="page">
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}<div class="errors">{{ field.errors }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <div class="actions">
+                <a href="{% url 'team_list' %}" class="btn btn-outline">Отмена</a>
+                <button type="submit" class="btn">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

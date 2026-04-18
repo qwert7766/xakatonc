@@ -1,0 +1,370 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — t2 Team Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --pink: #ff3495;
+            --gray-bg: #f2f2f2;
+            --gray-text: #666666;
+            --border: #e0e0e0;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #f2f2f2 0%, #ececec 100%);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 44px;
+            width: auto;
+            display: block;
+        }
+
+        .logo-app-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-link {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+        }
+
+        .header-link:hover { color: var(--white); }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 48px 40px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: var(--black);
+            border-radius: 4px;
+            padding: 52px 56px;
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            background: var(--pink);
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 68px;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .hero-text {
+            max-width: 480px;
+            font-size: 18px;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.58);
+        }
+
+        .hero-points {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-point {
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 2px;
+            padding: 16px 14px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .hero-point-label {
+            display: block;
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.38);
+            margin-bottom: 8px;
+        }
+
+        .hero-point-value {
+            font-family: var(--font-heading);
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--white);
+        }
+
+        .form-card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 40px 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .form-eyebrow {
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+
+        .form-title {
+            font-family: var(--font-heading);
+            font-size: 42px;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.95;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            color: var(--gray-text);
+            font-size: 16px;
+            line-height: 1.45;
+            margin-bottom: 28px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 8px;
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+        }
+
+        .field input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            background: #fff;
+            color: var(--black);
+            font: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--pink);
+            box-shadow: 0 0 0 3px rgba(255, 52, 149, 0.12);
+        }
+
+        .error-box {
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border: 1px solid rgba(200, 30, 30, 0.18);
+            background: #fff3f3;
+            color: #b42318;
+            border-radius: 2px;
+            font-size: 14px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--pink);
+            color: var(--white);
+            font-family: var(--font-heading);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .btn-submit:hover {
+            background: #ff1a80;
+            transform: translateY(-1px);
+        }
+
+        .form-note {
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--gray-text);
+            text-align: center;
+        }
+
+        @media (max-width: 980px) {
+            .page { padding: 24px 20px; }
+            .layout { grid-template-columns: 1fr; }
+            .hero { min-height: auto; padding: 36px 32px; }
+            .hero-title { font-size: 46px; }
+            .hero-points { grid-template-columns: 1fr; }
+            .form-card { padding: 32px 28px; }
+            .header { padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+        <a href="{% url 'onboarding' %}" class="header-link">Ссылка для сотрудника</a>
+    </header>
+
+    <main class="page">
+        <div class="layout">
+            <section class="hero">
+                <div>
+                    <p class="hero-eyebrow">Платформа руководителя</p>
+                    <h1 class="hero-title">Вход в<br>Team Builder</h1>
+                    <p class="hero-text">
+                        Управляйте командами, сравнивайте профили сотрудников и собирайте сильные составы в одном кабинете.
+                    </p>
+                </div>
+
+                <div class="hero-points">
+                    <div class="hero-point">
+                        <span class="hero-point-label">Профили</span>
+                        <span class="hero-point-value">DISC и мотивация</span>
+                    </div>
+                    <div class="hero-point">
+                        <span class="hero-point-label">Команды</span>
+                        <span class="hero-point-value">Состав и роли</span>
+                    </div>
+                    <div class="hero-point">
+                        <span class="hero-point-label">Подбор</span>
+                        <span class="hero-point-value">Рекомендации</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-card">
+                <p class="form-eyebrow">Авторизация</p>
+                <h2 class="form-title">Войти<br>в аккаунт</h2>
+                <p class="form-subtitle">Используйте логин и пароль руководителя, чтобы открыть рабочий кабинет.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="error-box">Неверный логин или пароль. Проверьте данные и попробуйте ещё раз.</div>
+                    {% endif %}
+
+                    <div class="field">
+                        <label for="id_username">Логин</label>
+                        {{ form.username }}
+                    </div>
+
+                    <div class="field">
+                        <label for="id_password">Пароль</label>
+                        {{ form.password }}
+                    </div>
+
+                    {% if next %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+
+                    <button type="submit" class="btn-submit">
+                        Войти
+                        <span>→</span>
+                    </button>
+                </form>
+
+                <p class="form-note">После входа вы попадёте в свой кабинет управления командой.</p>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

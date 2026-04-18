@@ -1,0 +1,367 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.name }} — Команда</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --pink: #ff3495;
+            --gray-bg: #f2f2f2;
+            --gray-text: #666666;
+            --border: #e0e0e0;
+            --font-heading: 'Barlow Condensed', sans-serif;
+            --font-body: 'Barlow Semi Condensed', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+            background: var(--gray-bg);
+            color: var(--black);
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--black);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-img { height: 44px; }
+        .logo-app-name {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--white);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-logout {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--pink);
+            text-decoration: none;
+            border: 1px solid var(--pink);
+            padding: 6px 14px;
+            border-radius: 2px;
+        }
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 48px 40px;
+        }
+        .page-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .eyebrow {
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+        }
+        .title {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 52px;
+            line-height: 0.9;
+            text-transform: uppercase;
+        }
+        .subtitle {
+            color: var(--gray-text);
+            margin-top: 14px;
+            max-width: 680px;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 2px;
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: var(--pink);
+            color: var(--white);
+            border: none;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--black);
+            border: 2px solid var(--black);
+        }
+        .btn-danger {
+            background: transparent;
+            color: #c81e1e;
+            border: 2px solid #c81e1e;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 28px 32px;
+        }
+        .card-title {
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--pink);
+            margin-bottom: 16px;
+        }
+        .meta-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .meta-item {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+        }
+        .meta-label {
+            display: block;
+            font-family: var(--font-heading);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+        }
+        .meta-value {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .members {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .member-card {
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            align-items: center;
+        }
+        .member-name {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .member-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 10px;
+            border-radius: 2px;
+            background: #f7f7f7;
+            border: 1px solid var(--border);
+            font-family: var(--font-heading);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .member-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .empty {
+            color: var(--gray-text);
+            font-size: 16px;
+        }
+        .add-form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .add-form select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            font: inherit;
+            background: #fff;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            color: var(--gray-text);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        @media (max-width: 980px) {
+            .page { padding: 24px 20px; }
+            .title { font-size: 38px; }
+            .grid { grid-template-columns: 1fr; }
+            .meta-list { grid-template-columns: 1fr; }
+            .member-card { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+        <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+    </header>
+
+    <main class="page">
+        <div class="page-header">
+            <div>
+                <p class="eyebrow">Команда</p>
+                <h1 class="title">{{ team.name }}</h1>
+                <p class="subtitle">
+                    {% if team.description %}
+                        {{ team.description }}
+                    {% else %}
+                        Описание команды пока не заполнено.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'team_edit' team.id %}" class="btn-primary">Редактировать</a>
+                <a href="{% url 'team_list' %}" class="btn-secondary">Все команды</a>
+                <a href="{% url 'team_delete' team.id %}" class="btn-danger">Удалить команду</a>
+            </div>
+        </div>
+
+        <div class="grid">
+            <section class="card">
+                <p class="card-title">Состав команды</p>
+
+                <div class="meta-list" style="margin-bottom: 20px;">
+                    <div class="meta-item">
+                        <span class="meta-label">Участников</span>
+                        <span class="meta-value">{{ employees|length }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Руководитель</span>
+                        <span class="meta-value">{{ request.user.get_full_name|default:request.user.username }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Создана</span>
+                        <span class="meta-value">{{ team.created_at|date:"d.m.Y" }}</span>
+                    </div>
+                </div>
+
+                {% if employees %}
+                    <div class="members">
+                        {% for employee in employees %}
+                            <div class="member-card">
+                                <div>
+                                    <div class="member-name">{{ employee.fio }}</div>
+                                    <div class="member-meta">
+                                        <span class="chip">{{ employee.role_in_team|default:"Роль не указана" }}</span>
+                                        <span class="chip">DISC: {{ employee.disc_primary }}</span>
+                                        <span class="chip">Возраст: {{ employee.age }}</span>
+                                        {% if employee.get_generation_display %}
+                                            <span class="chip">{{ employee.get_generation_display }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="member-actions">
+                                    <a href="{% url 'team_remove_member' team.id employee.id %}" class="btn-danger">Убрать</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty">В этой команде пока нет участников.</p>
+                {% endif %}
+            </section>
+
+            <aside class="card">
+                <p class="card-title">Добавить участника</p>
+
+                {% if available_employees %}
+                    <form method="post" action="{% url 'team_add_member' team.id %}" class="add-form">
+                        {% csrf_token %}
+                        <select name="employee_id" required>
+                            <option value="">Выберите сотрудника</option>
+                            {% for employee in available_employees %}
+                                <option value="{{ employee.id }}">
+                                    {{ employee.fio }}{% if employee.role_in_team %} — {{ employee.role_in_team }}{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-primary">Добавить в команду</button>
+                    </form>
+                {% else %}
+                    <p class="empty">Нет доступных сотрудников для добавления.</p>
+                {% endif %}
+
+                <a href="{% url 'team_list' %}" class="back-link">← Назад к списку команд</a>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>
