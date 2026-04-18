@@ -7,30 +7,15 @@
     <title>Регистрация завершена — t2 Team Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/onboarding.css' %}">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --black: #000000;
-            --white: #FFFFFF;
-            --pink: #FF3495;
-            --gray-bg: #F2F2F2;
-            --gray-text: #666666;
-            --border: #E0E0E0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-
         body {
-            font-family: var(--font-body);
             background: var(--black);
             color: var(--white);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
         .header {
             padding: 0 40px;
             height: 64px;
@@ -39,32 +24,6 @@
             justify-content: space-between;
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo-img {
-            height: 44px;
-            width: auto;
-            display: block;
-        }
-
-        .logo-app-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255,255,255,0.2);
-        }
-
         .main {
             flex: 1;
             display: flex;
@@ -76,7 +35,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .main::before {
             content: 'ГОТОВО';
             position: absolute;
@@ -92,7 +50,6 @@
             pointer-events: none;
             white-space: nowrap;
         }
-
         .check-mark {
             width: 72px;
             height: 72px;
@@ -106,7 +63,6 @@
             position: relative;
             z-index: 1;
         }
-
         .complete-eyebrow {
             font-family: var(--font-heading);
             font-size: 11px;
@@ -118,7 +74,6 @@
             position: relative;
             z-index: 1;
         }
-
         .complete-title {
             font-family: var(--font-heading);
             font-weight: 900;
@@ -130,7 +85,6 @@
             position: relative;
             z-index: 1;
         }
-
         .complete-name {
             font-size: 18px;
             color: rgba(255,255,255,0.6);
@@ -138,12 +92,10 @@
             position: relative;
             z-index: 1;
         }
-
         .complete-name strong {
             color: var(--white);
             font-weight: 700;
         }
-
         .scores-row {
             display: flex;
             gap: 12px;
@@ -152,7 +104,6 @@
             position: relative;
             z-index: 1;
         }
-
         .score-chip {
             display: flex;
             flex-direction: column;
@@ -165,12 +116,10 @@
             background: rgba(255,255,255,0.04);
             transition: border-color 0.15s, background 0.15s;
         }
-
         .score-chip.dominant {
             border-color: var(--pink);
             background: rgba(255, 52, 149, 0.1);
         }
-
         .score-chip-letter {
             font-family: var(--font-heading);
             font-weight: 900;
@@ -178,26 +127,20 @@
             color: rgba(255,255,255,0.3);
             line-height: 1;
         }
-
         .score-chip.dominant .score-chip-letter { color: var(--pink); }
-
         .score-chip-pct {
             font-family: var(--font-heading);
             font-weight: 900;
             font-size: 18px;
             color: rgba(255,255,255,0.6);
         }
-
         .score-chip.dominant .score-chip-pct { color: var(--white); }
-
-        /* Timer bar */
         .timer-wrap {
             width: 280px;
             margin: 0 auto 32px;
             position: relative;
             z-index: 1;
         }
-
         .timer-label {
             font-family: var(--font-heading);
             font-size: 11px;
@@ -207,14 +150,12 @@
             color: rgba(255,255,255,0.3);
             margin-bottom: 8px;
         }
-
         .timer-bar-bg {
             height: 3px;
             background: rgba(255,255,255,0.1);
             border-radius: 2px;
             overflow: hidden;
         }
-
         .timer-bar-fill {
             height: 100%;
             background: var(--pink);
@@ -222,13 +163,10 @@
             border-radius: 2px;
             animation: shrink 3s linear forwards;
         }
-
         @keyframes shrink {
             from { width: 100%; }
             to { width: 0%; }
         }
-
-        /* Buttons */
         .actions {
             display: flex;
             gap: 12px;
@@ -236,7 +174,6 @@
             position: relative;
             z-index: 1;
         }
-
         .btn-close {
             display: inline-flex;
             align-items: center;
@@ -255,7 +192,6 @@
             transition: background 0.15s;
         }
         .btn-close:hover { background: #ff1a80; }
-
         .btn-home {
             display: inline-flex;
             align-items: center;
@@ -274,18 +210,15 @@
             transition: color 0.15s, border-color 0.15s;
         }
         .btn-home:hover { color: var(--white); border-color: rgba(255,255,255,0.4); }
-
         .footer {
             padding: 24px 40px;
             border-top: 1px solid rgba(255,255,255,0.06);
             text-align: center;
         }
-
         .footer-text {
             font-size: 13px;
             color: rgba(255,255,255,0.25);
         }
-
         @media (max-width: 600px) {
             .complete-title { font-size: 44px; }
             .scores-row { flex-wrap: wrap; }
@@ -314,7 +247,6 @@
         <h1 class="complete-title">Вы<br>зарегистрированы</h1>
         <p class="complete-name">Данные и DISC-результаты <strong>{{ employee.fio }}</strong> сохранены в базе</p>
 
-        <!-- DISC Scores -->
         <div class="scores-row">
             <div class="score-chip {% if primary_type == 'D' %}dominant{% endif %}">
                 <span class="score-chip-letter">D</span>

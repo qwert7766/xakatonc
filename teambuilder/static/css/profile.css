@@ -1,0 +1,253 @@
+.breadcrumb {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    margin-bottom: 8px;
+}
+
+.page-title {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 52px;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    line-height: 0.9;
+    color: var(--black);
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.identity-card {
+    background: var(--black);
+    border-radius: 4px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.identity-card::after {
+    content: 'ПРО\AФИЛЬ';
+    white-space: pre;
+    position: absolute;
+    right: -10px;
+    bottom: -24px;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 72px;
+    color: rgba(255,255,255,0.04);
+    letter-spacing: -3px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.avatar-block {
+    width: 72px;
+    height: 72px;
+    background: var(--pink);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--white);
+    margin-bottom: 20px;
+}
+
+.user-fullname {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 26px;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.user-username {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 28px;
+}
+
+.meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+}
+
+.meta-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+}
+
+.data-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.section-card {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 32px 36px;
+}
+
+.section-eyebrow {
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 20px;
+}
+
+.field-label {
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gray-text);
+}
+
+.field-value {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--black);
+}
+
+.field-value.empty {
+    font-weight: 500;
+    color: #BBBBBB;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.disc-badge {
+    display: inline-flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.disc-letter {
+    width: 32px;
+    height: 32px;
+    background: var(--black);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--white);
+}
+
+.disc-letter.active { background: var(--pink); }
+
+.divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+@media (max-width: 900px) {
+    .profile-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 36px; }
+}
+
+.card {
+    background: var(--white);
+    border-radius: 4px;
+    padding: 32px 36px;
+}
+
+.fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 12px 14px;
+    font: inherit;
+    background: #fff;
+}
+
+.field textarea { resize: vertical; }
+
+.question {
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+}
+
+.question label {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.question ul {
+    list-style: none;
+    padding: 0;
+}
+
+.question li {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .fields-grid { grid-template-columns: 1fr; }
+}

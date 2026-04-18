@@ -8,71 +8,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --pink: #ff3495;
-            --gray-bg: #f2f2f2;
-            --gray-text: #666666;
-            --border: #e0e0e0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-        body {
-            font-family: var(--font-body);
-            background: var(--gray-bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
-        .header {
-            background: var(--black);
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-        .logo-img { height: 44px; }
-        .logo-app-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255,255,255,0.2);
-        }
-        .btn-logout {
-            font-family: var(--font-heading);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--pink);
-            text-decoration: none;
-            border: 1px solid var(--pink);
-            padding: 6px 14px;
-            border-radius: 2px;
-        }
         .page {
             max-width: 900px;
             margin: 0 auto;
             padding: 48px 40px;
-        }
-        .card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 32px 36px;
         }
         .breadcrumb {
             font-family: var(--font-heading);
@@ -91,6 +32,11 @@
             letter-spacing: -2px;
             line-height: 0.9;
             margin-bottom: 28px;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 4px;
+            padding: 32px 36px;
         }
         .fields-grid {
             display: grid;

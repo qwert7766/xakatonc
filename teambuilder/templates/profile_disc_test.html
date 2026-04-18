@@ -8,50 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --pink: #ff3495;
-            --gray-bg: #f2f2f2;
-            --gray-text: #666666;
-            --border: #e0e0e0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-        body {
-            font-family: var(--font-body);
-            background: var(--gray-bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
-        .header {
-            background: var(--black);
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-        .logo-img { height: 44px; }
-        .logo-app-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255,255,255,0.2);
-        }
         .page {
             max-width: 900px;
             margin: 0 auto;
@@ -129,6 +87,10 @@
             background: transparent;
             color: var(--black);
             border: 2px solid var(--black);
+        }
+        @media (max-width: 768px) {
+            .page { padding: 24px 20px; }
+            .card { padding: 28px 24px; }
         }
     </style>
 </head>

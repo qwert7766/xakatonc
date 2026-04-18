@@ -5,240 +5,7 @@
     <meta charset="UTF-8">
     <title>Команды — Team Builder</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --black: #000; --white: #fff; --pink: #FF3495;
-            --gray-bg: #F2F2F2; --gray-text: #666; --border: #E0E0E0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-        body {
-        font-family: var(--font-body);
-        background: var(--gray-bg);
-        color: var(--black);
-        }
-
-        .header {
-            background: var(--black);
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo-img {
-            height: 44px;
-        }
-
-        .logo-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: .5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255, 255, 255, .2);
-        }
-
-        .nav {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav a {
-            font-family: var(--font-heading);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, .5);
-            text-decoration: none;
-        }
-
-        .nav a:hover {
-            color: var(--white);
-        }
-
-        .hero {
-            background: var(--black);
-            padding: 48px 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 5px;
-            background: var(--pink);
-        }
-
-        .eyebrow {
-            font-family: var(--font-heading);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--pink);
-            margin-bottom: 12px;
-        }
-
-        .hero h1 {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 52px;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            color: var(--white);
-        }
-
-        .page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .top-bar h2 {
-            font-family: var(--font-heading);
-            font-size: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--pink);
-            color: var(--white);
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 2px;
-            padding: 14px 28px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background .15s;
-        }
-
-        .btn:hover {
-            background: #ff1a80;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            color: var(--black);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--black);
-            background: transparent;
-        }
-
-        .btn-danger {
-            background: transparent;
-            border: 1.5px solid #d92d20;
-            color: #d92d20;
-        }
-
-        .btn-danger:hover {
-            background: #d92d20;
-            color: var(--white);
-        }
-
-        .teams-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
-        }
-
-        .team-card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .team-card-name {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 22px;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
-        }
-
-        .team-card-desc {
-            font-size: 14px;
-            color: var(--gray-text);
-            line-height: 1.5;
-        }
-
-        .team-card-meta {
-            font-family: var(--font-heading);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--pink);
-        }
-
-        .team-card-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 11px;
-            letter-spacing: 1.5px;
-        }
-
-        .empty {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 60px;
-            text-align: center;
-        }
-
-        .empty p {
-            font-family: var(--font-heading);
-            font-size: 18px;
-            color: var(--gray-text);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/teams.css' %}">
 </head>
 <body>
 <header class="header">
@@ -246,17 +13,17 @@
         <img src="{% static 'img/logo.caf05db1.gif' %}" alt="t2" class="logo-img">
         <span class="logo-name">Team Builder</span>
     </a>
-    <nav class="nav">
-        <a href="{% url 'profile' %}">Профиль</a>
-        <a href="{% url 'create_ideal_profile' %}">Конструктор</a>
-        <a href="{% url 'team_list' %}">Команды</a>
-        <a href="{% url 'logout' %}">Выйти</a>
+    <nav class="header-nav">
+        <a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+        <a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+        <a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+        <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
     </nav>
 </header>
 
 <div class="hero">
     <div style="max-width:1100px;margin:0 auto;">
-        <p class="eyebrow">Управление</p>
+        <p class="hero-eyebrow">Управление</p>
         <h1>Мои команды</h1>
     </div>
 </div>
@@ -279,13 +46,13 @@
                 <div class="team-card-actions">
                     <a href="{% url 'team_detail' team.id %}" class="btn btn-sm">Открыть</a>
                     <a href="{% url 'team_edit' team.id %}" class="btn btn-outline btn-sm">Изменить</a>
-                    <a href="{% url 'team_delete' team.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                    <a href="{% url 'team_delete' team.id %}" class="btn-danger btn-sm">Удалить</a>
                 </div>
             </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="empty">
+        <div class="empty-state">
             <p>Команд пока нет</p>
             <a href="{% url 'team_create' %}" class="btn">Создать первую команду</a>
         </div>

@@ -7,114 +7,24 @@
     <title>Удаление команды — {{ team.name }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --pink: #ff3495;
-            --gray-bg: #f2f2f2;
-            --gray-text: #666666;
-            --border: #e0e0e0;
-            --danger: #d92d20;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-        body {
-            font-family: var(--font-body);
-            background: var(--gray-bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
-        .page {
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 64px 24px;
-        }
-        .card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 36px 40px;
-            border-top: 6px solid var(--danger);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-        .eyebrow {
-            font-family: var(--font-heading);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--danger);
-            margin-bottom: 10px;
-        }
-        .title {
-            font-family: var(--font-heading);
-            font-size: 42px;
-            font-weight: 900;
-            line-height: 0.95;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-        .text {
-            font-size: 17px;
-            color: var(--gray-text);
-            line-height: 1.5;
-        }
-        .team-name {
-            color: var(--black);
-            font-family: var(--font-heading);
-            font-weight: 800;
-        }
-        .actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 28px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            padding: 13px 22px;
-            border-radius: 2px;
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-        .btn-secondary {
-            border: 2px solid var(--black);
-            color: var(--black);
-            background: transparent;
-        }
-        .btn-danger {
-            border: none;
-            color: var(--white);
-            background: var(--danger);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/teams.css' %}">
 </head>
 <body>
-    <main class="page">
-        <section class="card">
-            <p class="eyebrow">Удаление</p>
-            <h1 class="title">Удалить команду?</h1>
-            <p class="text">
+    <main class="page" style="max-width:760px;margin:0 auto;padding:64px 24px;">
+        <section class="delete-card">
+            <p class="delete-eyebrow">Удаление</p>
+            <h1 class="delete-title">Удалить команду?</h1>
+            <p class="delete-text">
                 Вы собираетесь удалить команду <span class="team-name">{{ team.name }}</span>.
                 Это действие нельзя отменить.
             </p>
 
-            <div class="actions">
+            <div class="delete-actions">
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Удалить команду</button>
+                    <button type="submit" class="delete-btn">Удалить команду</button>
                 </form>
-                <a href="{% url 'team_detail' team.id %}" class="btn btn-secondary">Отмена</a>
+                <a href="{% url 'team_detail' team.id %}" class="delete-cancel">Отмена</a>
             </div>
         </section>
     </main>
