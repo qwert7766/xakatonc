@@ -131,7 +131,7 @@ class EmployeeScorer:
 
     def _disc_fit(self, employee) -> float:
         ideal = self.ideal.disc_preferred or {}
-        real = employee.disc_scores or {}
+        real = employee.disc_scores if isinstance(employee.disc_scores, dict) else {}
 
         keys = ['D', 'I', 'S', 'C']
 
@@ -230,7 +230,7 @@ class EmployeeScorer:
 
         # DISC
         d = axes['disc_fit']
-        if real:
+        if isinstance(real, dict) and real:
             emp_primary = max(real, key=real.get)
             emp_primary_value = real.get(emp_primary, 0)
         else:
@@ -280,7 +280,8 @@ class EmployeeScorer:
             lines.append(f"Возраст ({employee.age}) выходит за диапазон {age_min}–{age_max}")
 
         # Зарплатные ожидания
-        sal = (employee.salary_block or {}).get('min', 0)
+        salary_block = employee.salary_block if isinstance(employee.salary_block, dict) else {}
+        sal = salary_block.get('min', 0)
         if sal:
             lines.append(f"Минимальная зарплата: {sal:,} ₽".replace(',', ' '))
 

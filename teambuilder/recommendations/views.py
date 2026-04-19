@@ -39,7 +39,7 @@ def _enrich_candidate(rec):
     """
     employee = rec['employee']
     axes     = rec.get('axes', {})
-    disc     = employee.disc_scores or {}
+    disc = employee.disc_scores if isinstance(employee.disc_scores, dict) else {}
 
     rec['disc_d'] = disc.get('D', 0)
     rec['disc_i'] = disc.get('I', 0)

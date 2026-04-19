@@ -76,5 +76,37 @@
         </div>
     </main>
 
+    <script>
+        (function () {
+            const ageInput = document.getElementById("id_age");
+            const generationInput = document.getElementById("id_generation_display");
+
+            if (!ageInput || !generationInput) {
+                return;
+            }
+
+            const generationMap = [
+                { min: 62, max: Infinity, label: "Бэби-бумеры (1944–1964)" },
+                { min: 46, max: 61, label: "Поколение X (1965–1980)" },
+                { min: 29, max: 45, label: "Поколение Y / Миллениалы (1981–1996)" },
+                { min: 13, max: 28, label: "Поколение Z (1997–2012)" },
+            ];
+
+            function updateGeneration() {
+                const age = parseInt(ageInput.value, 10);
+                if (Number.isNaN(age)) {
+                    generationInput.value = "";
+                    return;
+                }
+
+                const match = generationMap.find((item) => age >= item.min && age <= item.max);
+                generationInput.value = match ? match.label : "";
+            }
+
+            ageInput.addEventListener("input", updateGeneration);
+            updateGeneration();
+        })();
+    </script>
+
 </body>
 </html>

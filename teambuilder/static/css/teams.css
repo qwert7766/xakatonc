@@ -370,8 +370,8 @@ body {
 
 .teams-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 20px;
 }
 
 .team-card {
@@ -381,6 +381,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-width: 0;
 }
 
 .team-card-name {
@@ -408,14 +409,23 @@ body {
 
 .team-card-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin-top: 4px;
+    width: 100%;
 }
 
 .btn-sm {
     padding: 8px 16px;
     font-size: 11px;
     letter-spacing: 1.5px;
+}
+
+.team-card-actions .btn,
+.team-card-actions .btn-outline,
+.team-card-actions .btn-danger {
+    flex: 1 1 0;
+    min-width: 0;
 }
 
 .empty-state {
