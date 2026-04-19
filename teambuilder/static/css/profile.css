@@ -249,5 +249,70 @@
 }
 
 @media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .identity-card,
+    .section-card,
+    .card {
+        padding: 22px 18px;
+    }
+
+    .page-title {
+        font-size: 34px;
+    }
+
+    .user-fullname {
+        font-size: 22px;
+    }
+
+    .field-value {
+        font-size: 16px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions .btn-primary,
+    .actions .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+
     .fields-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .identity-card,
+    .section-card,
+    .card {
+        padding: 18px 14px;
+    }
+
+    .avatar-block {
+        width: 58px;
+        height: 58px;
+        font-size: 22px;
+    }
+
+    .page-title {
+        font-size: 28px;
+    }
+
+    .user-fullname {
+        font-size: 18px;
+    }
+
+    .disc-letter {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .field-value {
+        font-size: 14px;
+    }
 }

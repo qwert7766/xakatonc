@@ -570,8 +570,135 @@ body {
     .grid { grid-template-columns: 1fr; }
     .meta-list { grid-template-columns: 1fr; }
     .member-card { grid-template-columns: 1fr; }
+    .teams-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    .header { padding: 0 20px; }
+    .header {
+        padding: 12px 20px;
+        height: auto;
+        min-height: 64px;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .header-nav {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+
+    .page {
+        padding: 20px 16px;
+    }
+
+    .page-header,
+    .top-bar,
+    .actions,
+    .delete-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .title,
+    .delete-title,
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .subtitle,
+    .delete-text {
+        font-size: 14px;
+    }
+
+    .card,
+    .team-card,
+    .delete-card,
+    .empty-state {
+        padding: 20px 16px;
+    }
+
+    .teams-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .team-card-actions,
+    .member-actions {
+        flex-direction: column;
+    }
+
+    .team-card-actions .btn,
+    .team-card-actions .btn-outline,
+    .team-card-actions .btn-danger,
+    .actions .btn-primary,
+    .actions .btn-secondary,
+    .actions .btn-danger,
+    .delete-actions .delete-btn,
+    .delete-actions .delete-cancel,
+    .member-actions .btn-danger,
+    .btn,
+    .btn-outline {
+        width: 100%;
+    }
+
+    .member-name,
+    .team-card-name,
+    .meta-value {
+        font-size: 18px;
+    }
+
+    .hero {
+        padding: 32px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page {
+        padding: 16px 12px;
+    }
+
+    .header {
+        padding: 10px 12px;
+    }
+
+    .logo-img {
+        height: 34px;
+    }
+
+    .logo-app-name,
+    .logo-name {
+        font-size: 11px;
+        letter-spacing: 2px;
+        padding-left: 8px;
+    }
+
+    .nav-link,
+    .btn-logout {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .title,
+    .delete-title,
+    .hero h1 {
+        font-size: 26px;
+    }
+
+    .hero {
+        padding: 28px 12px;
+    }
+
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .delete-btn,
+    .delete-cancel {
+        padding: 10px 14px;
+        font-size: 10px;
+        letter-spacing: 1.2px;
+    }
 }

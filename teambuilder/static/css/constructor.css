@@ -323,5 +323,47 @@ input[type="radio"] {
     .form-card { padding: 28px 24px; }
     .submit-row { flex-direction: column; gap: 20px; align-items: stretch; }
     .btn-submit { justify-content: center; }
-    .header { padding: 0 20px; }
+    .header {
+        padding: 12px 20px;
+        height: auto;
+        min-height: 64px;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .header-nav {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-banner {
+        padding: 28px 12px;
+    }
+    .hero-title {
+        font-size: 28px;
+    }
+    .hero-desc {
+        font-size: 13px;
+    }
+    .page {
+        padding: 18px 12px;
+    }
+    .form-card {
+        padding: 20px 14px;
+    }
+    .form-section-title {
+        font-size: 9px;
+        letter-spacing: 2px;
+        gap: 8px;
+    }
+    .btn-submit {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 18px;
+        font-size: 11px;
+    }
 }
