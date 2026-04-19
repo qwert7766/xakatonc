@@ -132,7 +132,16 @@ def hire_employee(request, profile_id, employee_id):
     )
 
     if ideal.team:
+        if employee.current_team_id and employee.current_team_id != ideal.team.id:
+            messages.warning(
+                request,
+                f'{employee.fio} уже состоит в другой команде и не может быть добавлен повторно',
+            )
+            return redirect('show_recommendation', profile_id=profile_id)
+
         ideal.team.employees.add(employee)
+        employee.current_team = ideal.team
+        employee.save(update_fields=['current_team'])
 
     pending_ids = request.session.get(f'pending_candidates_{profile_id}', [])
     if employee.id in pending_ids:

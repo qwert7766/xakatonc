@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
-from django.views.generic import TemplateView
 
 from core.views import home_view, logout_view, profile_disc_test_view, profile_edit_view, profile_view
 from profiles.views import onboarding_start, onboarding_disc, onboarding_complete

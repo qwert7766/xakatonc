@@ -108,6 +108,10 @@ WEIGHTS = {
 }
 
 
+def _normalize_role(value: str) -> str:
+    return " ".join((value or "").strip().lower().split())
+
+
 class EmployeeScorer:
 
     def __init__(self, ideal_profile):
@@ -248,25 +252,25 @@ class EmployeeScorer:
         mf = axes['motivation_fit']
         lines.append(f" Мотивация: {MOTIV_LABELS.get(motiv, motiv)}")
         if mf >= 0.80:
-            lines.append(f"Мотивационный профиль хорошо подходит для функций этой роли")
+            lines.append("Мотивационный профиль хорошо подходит для функций этой роли")
         elif mf >= 0.55:
-            lines.append(f"Мотивация частично совпадает с функциями роли")
+            lines.append("Мотивация частично совпадает с функциями роли")
         else:
-            lines.append(f"Мотивация плохо совпадает с функциями роли — риск выгорания")
+            lines.append("Мотивация плохо совпадает с функциями роли — риск выгорания")
 
         # Тип мотивации напрямую
         gp = axes['gerchikov_pref']
         if self.ideal.gerchikov_preferred:
             if gp >= 0.85:
-                lines.append(f"Тип мотивации совпадает с предпочитаемым")
+                lines.append("Тип мотивации совпадает с предпочитаемым")
             elif gp <= 0.45:
-                lines.append(f"Тип мотивации отличается от предпочитаемого вами")
+                lines.append("Тип мотивации отличается от предпочитаемого вами")
 
         # Поколение
         gs = axes['gen_style_fit']
-        lines.append(f"{GEN_LABELS.get(gen, gen)}")
+        lines.append(GEN_LABELS.get(gen, gen))
         if gs >= 0.85:
-            lines.append(f"Поколение отлично совместимо с вашим стилем управления")
+            lines.append("Поколение отлично совместимо с вашим стилем управления")
         elif gs <= 0.35:
             lines.append(f"Поколение {gen} может плохо воспринять ваш стиль — нужна адаптация")
 
@@ -294,7 +298,20 @@ def get_recommendations(ideal_profile, limit: int = 10) -> list:
     Берёт всех активных кандидатов.
     """
     scorer = EmployeeScorer(ideal_profile)
-    candidates = Employee.objects.filter(is_active_candidate=True)
+    candidates = Employee.objects.filter(
+        is_active_candidate=True,
+        current_team__isnull=True,
+    )
+
+    target_role = _normalize_role(ideal_profile.target_role)
+    if target_role:
+        matched_candidates = [
+            employee
+            for employee in candidates
+            if _normalize_role(employee.role_in_team) == target_role
+        ]
+        if matched_candidates:
+            candidates = matched_candidates
 
     results = []
     for emp in candidates:

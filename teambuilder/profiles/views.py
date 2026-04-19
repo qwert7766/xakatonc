@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Employee
 from .forms import EmployeeRegistrationForm, DiscTestForm, TeamForm
 from .models import Team, Employee
 
@@ -38,7 +37,10 @@ def team_detail(request, team_id):
     """Детали команды"""
     team = get_object_or_404(Team, id=team_id, manager=request.user)
     employees = team.employees.all()
-    available_employees = Employee.objects.filter(is_active_candidate=True).exclude(teams=team)
+    available_employees = Employee.objects.filter(
+        is_active_candidate=True,
+        current_team__isnull=True,
+    )
     return render(request, 'profiles/team_detail.html', {
         'team': team,
         'employees': employees,
@@ -71,6 +73,7 @@ def team_delete(request, team_id):
     team = get_object_or_404(Team, id=team_id, manager=request.user)
     
     if request.method == 'POST':
+        Employee.objects.filter(current_team=team).update(current_team=None)
         team.delete()
         return redirect('team_list')
     
@@ -85,10 +88,27 @@ def team_add_member(request, team_id):
     if request.method == 'POST':
         employee_id = request.POST.get('employee_id')
         employee = get_object_or_404(Employee, id=employee_id)
+        if employee.current_team_id == team.id:
+            messages.info(request, f'{employee.fio} уже в этой команде')
+            return redirect('team_detail', team_id=team.id)
+
+        if employee.current_team_id:
+            messages.warning(
+                request,
+                f'{employee.fio} уже состоит в другой команде и не может быть добавлен повторно',
+            )
+            return redirect('team_detail', team_id=team.id)
+
         team.employees.add(employee)
+        employee.current_team = team
+        employee.save(update_fields=['current_team'])
+        messages.success(request, f'{employee.fio} добавлен в команду')
         return redirect('team_detail', team_id=team.id)
     
-    available_employees = Employee.objects.filter(is_active_candidate=True).exclude(teams=team)
+    available_employees = Employee.objects.filter(
+        is_active_candidate=True,
+        current_team__isnull=True,
+    )
     return render(request, 'profiles/team_add_member.html', {
         'team': team,
         'employees': available_employees
@@ -101,6 +121,9 @@ def team_remove_member(request, team_id, employee_id):
     team = get_object_or_404(Team, id=team_id, manager=request.user)
     employee = get_object_or_404(Employee, id=employee_id)
     team.employees.remove(employee)
+    if employee.current_team_id == team.id:
+        employee.current_team = None
+        employee.save(update_fields=['current_team'])
     messages.info(request, f'{employee.fio} удалён из команды')
     return redirect('team_detail', team_id=team.id)
 
@@ -132,6 +155,9 @@ def team_remove_member_with_rating(request, team_id, employee_id):
         messages.info(request, f'{employee.fio} удалён из команды (оценка {rating}/5)')
     
     team.employees.remove(employee)
+    if employee.current_team_id == team.id:
+        employee.current_team = None
+        employee.save(update_fields=['current_team'])
     return redirect('team_detail', team_id=team.id)
 
 
