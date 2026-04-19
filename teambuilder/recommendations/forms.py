@@ -5,17 +5,15 @@ from .models import IdealProfile, ROLE_FUNCTION_CHOICES, LEADERSHIP_STYLE_CHOICE
 
 class IdealProfileForm(forms.ModelForm):
 
-    # Роль
-    target_role = forms.CharField(
-        max_length=200,
-        label="Название роли / позиции",
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Например: Менеджер по ключевым клиентам',
-        })
+    # Роль — выбирается из ролей существующих сотрудников
+    # choices заполняются динамически в __init__
+    target_role = forms.ChoiceField(
+        label="Роль / позиция",
+        choices=[('', '— выберите роль —')],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        required=True,
     )
 
-    # Функции роли
     role_functions = forms.MultipleChoiceField(
         choices=ROLE_FUNCTION_CHOICES,
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
@@ -24,78 +22,55 @@ class IdealProfileForm(forms.ModelForm):
         help_text="Выбери всё подходящее — на основе этого подберём мотивационный профиль"
     )
 
-    # DISC слайдеры
-    disc_d = forms.IntegerField(
-        min_value=0, max_value=100, initial=50,
+    disc_d = forms.IntegerField(min_value=0, max_value=100, initial=50,
         label="D — Доминантность",
         help_text="Решительность, напористость, готовность брать ответственность",
-        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'})
-    )
-    disc_i = forms.IntegerField(
-        min_value=0, max_value=100, initial=50,
+        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'}))
+    disc_i = forms.IntegerField(min_value=0, max_value=100, initial=50,
         label="I — Влиятельность",
         help_text="Общительность, умение убеждать, работа с людьми",
-        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'})
-    )
-    disc_s = forms.IntegerField(
-        min_value=0, max_value=100, initial=50,
+        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'}))
+    disc_s = forms.IntegerField(min_value=0, max_value=100, initial=50,
         label="S — Стабильность",
         help_text="Надёжность, спокойствие, исполнительность",
-        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'})
-    )
-    disc_c = forms.IntegerField(
-        min_value=0, max_value=100, initial=50,
+        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'}))
+    disc_c = forms.IntegerField(min_value=0, max_value=100, initial=50,
         label="C — Аналитичность",
         help_text="Точность, системность, внимание к деталям",
-        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'})
-    )
+        widget=forms.NumberInput(attrs={'type': 'range', 'class': 'form-range'}))
 
-    # Мотивация по Герчикову
     gerchikov_preferred = forms.ChoiceField(
         choices=[('', '— не важно —')] + list(GERCHIKOV_CHOICES),
         required=False,
         label="Предпочитаемый тип мотивации",
         help_text="По методологии Герчикова — что движет этим человеком?",
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
+        widget=forms.Select(attrs={'class': 'form-select'}))
 
-    # Стиль управления
     leadership_style = forms.ChoiceField(
         choices=LEADERSHIP_STYLE_CHOICES,
         required=True,
         label="Ваш стиль управления",
         help_text="Влияет на совместимость с разными поколениями",
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
+        widget=forms.Select(attrs={'class': 'form-select'}))
 
-    # Возраст
-    age_min = forms.IntegerField(
-        min_value=18, max_value=70, initial=25,
+    age_min = forms.IntegerField(min_value=18, max_value=70, initial=25,
         label="Возраст от",
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
-    )
-    age_max = forms.IntegerField(
-        min_value=18, max_value=70, initial=45,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    age_max = forms.IntegerField(min_value=18, max_value=70, initial=45,
         label="до",
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
-    )
+        widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
-    # Мотивационный стиль
     motivation_style = forms.CharField(
         required=False,
         label="Как планируете мотивировать сотрудника?",
         widget=forms.Textarea(attrs={
-            'class': 'form-control',
-            'rows': 2,
+            'class': 'form-control', 'rows': 2,
             'placeholder': 'Например: премии за результат, карьерный рост, интересные задачи',
-        })
-    )
+        }))
 
-    # Подбор в существующую команду
     is_for_existing_team = forms.BooleanField(
         required=False,
-        label="Подбор в уже существующую команду?"
-    )
+        label="Подбор в уже существующую команду?")
 
     class Meta:
         model = IdealProfile
@@ -106,22 +81,34 @@ class IdealProfileForm(forms.ModelForm):
             'is_for_existing_team', 'team',
         ]
 
-    def __init__(self, *args, **kwargs):
-        manager = kwargs.pop('manager', None)
-        
+    def __init__(self, *args, manager=None, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        if manager and manager.leadership_style:
-            self.initial['leadership_style'] = manager.leadership_style
-            self.fields['leadership_style'].disabled = True
-            self.fields['leadership_style'].help_text = f"Стиль управления взят из вашего профиля: {dict(LEADERSHIP_STYLE_CHOICES).get(manager.leadership_style, manager.leadership_style)}"
-        
+
+        # Динамически заполняем роли из базы сотрудников
+        from profiles.models import Employee
+        roles = list(
+            Employee.objects
+            .exclude(role_in_team='')
+            .exclude(role_in_team__isnull=True)
+            .values_list('role_in_team', flat=True)
+            .distinct()
+            .order_by('role_in_team')
+        )
+
+        if roles:
+            role_choices = [('', '— выберите роль —')] + [(r, r) for r in roles]
+        else:
+            role_choices = [('', '— сначала добавьте сотрудников с указанием роли —')]
+
+        self.fields['target_role'].choices = role_choices
+
         if manager:
             self.fields['team'].queryset = manager.teams.all()
             self.fields['team'].required = False
-            self.fields['team'].label = "Выберите команду (если подбор в существующую)"
+            self.fields['team'].label = "Выбери команду"
             self.fields['team'].widget.attrs['class'] = 'form-select'
-        
+
+        # Заполняем слайдеры при редактировании
         if self.instance and self.instance.pk and self.instance.disc_preferred:
             dp = self.instance.disc_preferred
             self.initial.update({
@@ -132,6 +119,12 @@ class IdealProfileForm(forms.ModelForm):
                 'age_min': self.instance.age_min,
                 'age_max': self.instance.age_max,
             })
+
+    def clean_target_role(self):
+        value = self.cleaned_data.get('target_role', '').strip()
+        if not value:
+            raise forms.ValidationError("Выберите роль из списка")
+        return value
 
     def clean(self):
         cleaned = super().clean()
@@ -154,6 +147,7 @@ class IdealProfileForm(forms.ModelForm):
         instance.age_max = self.cleaned_data.get('age_max', 50)
         instance.role_functions = self.cleaned_data.get('role_functions', [])
 
+        # preferred_personality_types вычисляем из слайдеров
         dp = instance.disc_preferred
         instance.preferred_personality_types = [
             t for t, v in dp.items() if v >= 60
@@ -161,5 +155,4 @@ class IdealProfileForm(forms.ModelForm):
 
         if commit:
             instance.save()
-            self.save_m2m()
         return instance
