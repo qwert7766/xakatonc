@@ -1,16 +1,12 @@
 from django import forms
+
 from .disc_data import DISC_QUESTIONS
 from .models import Employee, Team
- 
- 
+
+
 class EmployeeRegistrationForm(forms.ModelForm):
     fio = forms.CharField(max_length=255, label="ФИО")
     age = forms.IntegerField(min_value=14, label="Возраст")
-    generation = forms.ChoiceField(
-        choices=Employee._meta.get_field("generation").choices,
-        label="Поколение",
-    )
-    role_in_team = forms.CharField(max_length=100, label="Роль в команде")
     gerchikov_type = forms.ChoiceField(
         choices=Employee._meta.get_field("gerchikov_type").choices,
         label="Тип мотивации",
@@ -35,18 +31,24 @@ class EmployeeRegistrationForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"rows": 2}),
         label="Комментарий",
     )
- 
+
     class Meta:
         model = Employee
-        fields = ('fio', 'age', 'generation', 'role_in_team', 'gerchikov_type', 'motivation_expect', 'notes')
- 
+        fields = (
+            "fio",
+            "age",
+            "gerchikov_type",
+            "motivation_expect",
+            "notes",
+        )
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.is_active_candidate = True
         instance.disc_scores = {"D": 0, "I": 0, "S": 0, "C": 0}
         instance.salary_block = {
-            "min":         self.cleaned_data["salary_min"],
-            "motivation":  self.cleaned_data["salary_motivation"],
+            "min": self.cleaned_data["salary_min"],
+            "motivation": self.cleaned_data["salary_motivation"],
             "development": self.cleaned_data["salary_development"],
         }
         if commit:
@@ -55,8 +57,8 @@ class EmployeeRegistrationForm(forms.ModelForm):
         else:
             self.created_employee = None
         return instance
- 
- 
+
+
 class DiscTestForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -67,7 +69,7 @@ class DiscTestForm(forms.Form):
                 widget=forms.RadioSelect,
                 required=True,
             )
- 
+
     def calculate_scores(self):
         scores = {"D": 0, "I": 0, "S": 0, "C": 0}
         for answer in self.cleaned_data.values():
@@ -75,17 +77,21 @@ class DiscTestForm(forms.Form):
                 scores[answer] += 1
         total = sum(scores.values()) or 1
         return {k: round(v * 100 / total) for k, v in scores.items()}
- 
+
 
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ['name', 'description']
+        fields = ["name", "description"]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Название команды'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Описание команды'}),
+            "name": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Название команды"}
+            ),
+            "description": forms.Textarea(
+                attrs={"class": "form-control", "rows": 3, "placeholder": "Описание команды"}
+            ),
         }
         labels = {
-            'name': 'Название команды',
-            'description': 'Описание',
+            "name": "Название команды",
+            "description": "Описание",
         }
