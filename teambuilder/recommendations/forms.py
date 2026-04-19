@@ -97,11 +97,6 @@ class IdealProfileForm(forms.ModelForm):
         ),
     )
 
-    is_for_existing_team = forms.BooleanField(
-        required=False,
-        label="Подбор в уже существующую команду?",
-    )
-
     class Meta:
         model = IdealProfile
         fields = [
@@ -110,7 +105,6 @@ class IdealProfileForm(forms.ModelForm):
             "gerchikov_preferred",
             "leadership_style_display",
             "motivation_style",
-            "is_for_existing_team",
             "team",
         ]
 
@@ -182,6 +176,7 @@ class IdealProfileForm(forms.ModelForm):
         instance.age_max = self.cleaned_data.get("age_max", 50)
         instance.role_functions = self.cleaned_data.get("role_functions", [])
         instance.leadership_style = getattr(self.manager, "leadership_style", None) or "democratic"
+        instance.is_for_existing_team = bool(self.cleaned_data.get("team"))
 
         disc_profile = instance.disc_preferred
         instance.preferred_personality_types = [
