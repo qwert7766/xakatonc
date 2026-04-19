@@ -1,6 +1,7 @@
 from django import forms
 from core.models import GERCHIKOV_CHOICES
 from .models import IdealProfile, ROLE_FUNCTION_CHOICES, LEADERSHIP_STYLE_CHOICES
+from profiles.models import Role
 
 
 class IdealProfileForm(forms.ModelForm):
@@ -85,15 +86,7 @@ class IdealProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Динамически заполняем роли из базы сотрудников
-        from profiles.models import Employee
-        roles = list(
-            Employee.objects
-            .exclude(role_in_team='')
-            .exclude(role_in_team__isnull=True)
-            .values_list('role_in_team', flat=True)
-            .distinct()
-            .order_by('role_in_team')
-        )
+        roles = list(Role.objects.values_list('name', flat=True).order_by('name'))
 
         if roles:
             role_choices = [('', '— выберите роль —')] + [(r, r) for r in roles]

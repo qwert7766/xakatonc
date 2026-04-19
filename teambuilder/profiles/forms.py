@@ -1,12 +1,17 @@
 from django import forms
 
 from .disc_data import DISC_QUESTIONS
-from .models import Employee, Team
+from .models import Employee, Role, Team
 
 
 class EmployeeRegistrationForm(forms.ModelForm):
     fio = forms.CharField(max_length=255, label="ФИО")
     age = forms.IntegerField(min_value=14, label="Возраст")
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.none(),
+        label="Роль в команде",
+        empty_label="Выберите роль",
+    )
     gerchikov_type = forms.ChoiceField(
         choices=Employee._meta.get_field("gerchikov_type").choices,
         label="Тип мотивации",
@@ -42,10 +47,16 @@ class EmployeeRegistrationForm(forms.ModelForm):
             "notes",
         )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["role"].queryset = Role.objects.order_by("name")
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.is_active_candidate = True
         instance.disc_scores = {"D": 0, "I": 0, "S": 0, "C": 0}
+        selected_role = self.cleaned_data.get("role")
+        instance.role_in_team = selected_role.name if selected_role else ""
         instance.salary_block = {
             "min": self.cleaned_data["salary_min"],
             "motivation": self.cleaned_data["salary_motivation"],

@@ -1,5 +1,18 @@
 from django.db import models
 from core.models import CustomUser, GERCHIKOV_CHOICES, GENERATION_CHOICES
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=100, unique=True, verbose_name="Название роли")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Роль"
+        verbose_name_plural = "Роли"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
  
  
 class Team(models.Model):
