@@ -135,27 +135,25 @@ class EmployeeScorer:
  
         keys = ['D', 'I', 'S', 'C']
  
-        # Если DISC не заполнен или все нули — возвращаем 0
         if not ideal or not real:
             return 0.0
         if sum(real.get(k, 0) for k in keys) == 0:
             return 0.0
  
-        # 1. Косинусное сходство — совпадение формы профиля (20% веса)
+        # Косинусное сходство — совпадение формы профиля 
         dot    = sum(ideal.get(k, 0) * real.get(k, 0) for k in keys)
         n_i    = math.sqrt(sum(ideal.get(k, 0) ** 2 for k in keys)) or 1
         n_r    = math.sqrt(sum(real.get(k,  0) ** 2 for k in keys)) or 1
         cosine = dot / (n_i * n_r)
  
-        # 2. Взвешенная близость по каждой букве
+        # Взвешенная близость
         # Для каждой буквы: насколько реальное значение близко к идеальному
-        # Нормируем отклонение относительно идеального значения (а не от 100)
+        # Нормируем отклонение относительно идеального значения
         weighted_diffs = []
         for k in keys:
             i_val = ideal.get(k, 0)
             r_val = real.get(k, 0)
             if i_val == 0:
-                # Если идеал 0 — любое значение не штрафуем
                 weighted_diffs.append(1.0)
             else:
                 # Отклонение относительно идеала: 0=идеально, 1=полностью не совпадает
@@ -243,7 +241,7 @@ class EmployeeScorer:
  
         # Мотивация
         mf = axes['motivation_fit']
-        lines.append(f"💡 Мотивация: {MOTIV_LABELS.get(motiv, motiv)}")
+        lines.append(f" Мотивация: {MOTIV_LABELS.get(motiv, motiv)}")
         if mf >= 0.80:
             lines.append(f"Мотивационный профиль хорошо подходит для функций роли")
         elif mf >= 0.55:
@@ -261,7 +259,7 @@ class EmployeeScorer:
  
         # Поколение
         gs = axes['gen_style_fit']
-        lines.append(f"👥 {GEN_LABELS.get(gen, gen)}")
+        lines.append(f" {GEN_LABELS.get(gen, gen)}")
         if gs >= 0.85:
             lines.append(f"Поколение хорошо совместимо с вашим стилем управления")
         elif gs <= 0.35:

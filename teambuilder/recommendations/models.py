@@ -119,6 +119,8 @@ class RecommendationLog(models.Model):
     ideal_profile = models.ForeignKey(
         IdealProfile,
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         verbose_name="Идеальный профиль"
     )
     employee = models.ForeignKey(
@@ -131,6 +133,12 @@ class RecommendationLog(models.Model):
         null=True,
         blank=True,
         verbose_name="Итоговый балл (0-100)"
+    )
+ 
+    rating = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Оценка руководителя (1-5)"
     )
  
     score_breakdown = models.JSONField(
@@ -168,4 +176,6 @@ class RecommendationLog(models.Model):
         verbose_name_plural = "Логи рекомендаций"
  
     def __str__(self):
-        return f"{self.employee.fio} — {self.match_score:.1f}% — {self.get_status_display()}" if self.match_score else f"{self.employee.fio} — {self.get_status_display()}"
+        if self.match_score:
+            return f"{self.employee.fio} — {self.match_score:.1f}% — {self.get_status_display()}"
+        return f"{self.employee.fio} — {self.get_status_display()}"

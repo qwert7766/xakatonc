@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Team Builder — t2{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="icon" type="image/gif" href="{% static 'img/logo.caf05db1.gif' %}">
+    {% block extra_css %}{% endblock %}
+    {% block extra_style %}{% endblock %}
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
+            <span class="logo-app-name">Team Builder</span>
+        </a>
+        <nav class="header-nav">
+            {% block nav %}
+            <a href="/" class="nav-link">Главная</a>
+            <a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+            <a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+            <a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+            <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+            {% endblock %}
+        </nav>
+    </header>
+
+    <main class="{% block main_class %}page{% endblock %}">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

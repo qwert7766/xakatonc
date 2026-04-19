@@ -1,168 +1,168 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой профиль — t2 Team Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
-    <style>
-        .page-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            margin-bottom: 36px;
-        }
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            text-decoration: none;
-            transition: color 0.15s;
-        }
-        .btn-back:hover { color: var(--black); }
-    </style>
-</head>
-<body>
 
-<header class="header">
-    <a href="/" class="logo">
-        <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Бренд года" class="logo-img">
-        <span class="logo-app-name">Team Builder</span>
-    </a>
-    <nav class="header-nav">
-        <a href="/" class="nav-link">Главная</a>
-        <a href="/constructor/" class="nav-link">Конструктор</a>
-        <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
-    </nav>
-</header>
+{% block title %}Мой профиль — t2 Team Builder{% endblock %}
 
-    <main class="page">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
 
-        <div class="page-header">
-            <div>
-                <p class="breadcrumb">Аккаунт</p>
-                <h1 class="page-title">Мой<br>профиль</h1>
-            </div>
-            <a href="/" class="btn-back">← На главную</a>
+{% block extra_style %}
+<style>
+    .page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 36px;
+    }
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .btn-back:hover { color: var(--black); }
+    .page { padding: 48px 40px; max-width: 1100px; margin: 0 auto; }
+    .breadcrumb {
+        font-family: var(--font-heading);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        margin-bottom: 8px;
+    }
+    .page-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 52px;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        line-height: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block nav %}
+<a href="/" class="nav-link">Главная</a>
+<a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+<a href="{% url 'profile' %}" class="nav-link active">Профиль</a>
+<a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+<a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">Аккаунт</p>
+        <h1 class="page-title">Мой<br>профиль</h1>
+    </div>
+    <a href="/" class="btn-back">← На главную</a>
+</div>
+
+<div class="profile-grid">
+    <div class="identity-card">
+        <div class="avatar-block">
+            {{ user.username|slice:":1"|upper }}{{ user.username|slice:"1:2"|upper }}
         </div>
+        <div class="user-fullname">{{ user.get_full_name|default:user.username }}</div>
+        <div class="user-username">@{{ user.username }}</div>
 
-        <div class="profile-grid">
-
-            <div class="identity-card">
-                <div class="avatar-block">
-                    {{ user.username|slice:":1"|upper }}{{ user.username|slice:"1:2"|upper }}
-                </div>
-                <div class="user-fullname">{{ user.get_full_name|default:user.username }}</div>
-                <div class="user-username">@{{ user.username }}</div>
-
-                <div class="meta-row">
-                    <div class="meta-item">
-                        <span class="meta-label">Email</span>
-                        <span class="meta-value">{{ user.email|default:"—" }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Регистрация</span>
-                        <span class="meta-value">{{ user.date_joined|date:"d.m.Y" }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Последний вход</span>
-                        <span class="meta-value">{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</span>
-                    </div>
-                </div>
+        <div class="meta-row">
+            <div class="meta-item">
+                <span class="meta-label">Email</span>
+                <span class="meta-value">{{ user.email|default:"—" }}</span>
             </div>
+            <div class="meta-item">
+                <span class="meta-label">Регистрация</span>
+                <span class="meta-value">{{ user.date_joined|date:"d.m.Y" }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Последний вход</span>
+                <span class="meta-value">{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</span>
+            </div>
+        </div>
+    </div>
 
-            <div class="data-panel">
-
-                <div class="section-card">
-                    <p class="section-eyebrow">Психотип и мотивация</p>
-                    <div class="fields-grid">
-
-                        <div class="field">
-                            <span class="field-label">DISC профиль</span>
-                            {% if user.disc_profile %}
-                                <div class="disc-badge">
-                                    <span class="disc-letter {% if 'D' in user.disc_profile %}active{% endif %}">D</span>
-                                    <span class="disc-letter {% if 'I' in user.disc_profile %}active{% endif %}">I</span>
-                                    <span class="disc-letter {% if 'S' in user.disc_profile %}active{% endif %}">S</span>
-                                    <span class="disc-letter {% if 'C' in user.disc_profile %}active{% endif %}">C</span>
-                                </div>
-                                <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(90px, 1fr)); gap: 8px;">
-                                    <span class="field-value">D: {{ user.disc_profile.D }}%</span>
-                                    <span class="field-value">I: {{ user.disc_profile.I }}%</span>
-                                    <span class="field-value">S: {{ user.disc_profile.S }}%</span>
-                                    <span class="field-value">C: {{ user.disc_profile.C }}%</span>
-                                </div>
-                            {% else %}
-                                <span class="field-value empty">Надо пройти тест</span>
-                                <a href="{% url 'profile_disc_test' %}" class="btn-primary" style="margin-top: 10px; align-self: flex-start;">Пройти тест</a>
-                            {% endif %}
+    <div class="data-panel">
+        <div class="section-card">
+            <p class="section-eyebrow">Психотип и мотивация</p>
+            <div class="fields-grid">
+                <div class="field">
+                    <span class="field-label">DISC профиль</span>
+                    {% if user.disc_profile %}
+                        <div class="disc-badge">
+                            <span class="disc-letter {% if 'D' in user.disc_profile %}active{% endif %}">D</span>
+                            <span class="disc-letter {% if 'I' in user.disc_profile %}active{% endif %}">I</span>
+                            <span class="disc-letter {% if 'S' in user.disc_profile %}active{% endif %}">S</span>
+                            <span class="disc-letter {% if 'C' in user.disc_profile %}active{% endif %}">C</span>
                         </div>
-
-                        <div class="field">
-                            <span class="field-label">Тип мотивации (Герчиков)</span>
-                            <span class="field-value {% if not user.get_gerchikov_type_display %}empty{% endif %}">
-                                {{ user.get_gerchikov_type_display|default:"Не указан" }}
-                            </span>
+                        <div style="margin-top: 12px; display: grid; grid-template-columns: repeat(2, minmax(90px, 1fr)); gap: 8px;">
+                            <span class="field-value">D: {{ user.disc_profile.D }}%</span>
+                            <span class="field-value">I: {{ user.disc_profile.I }}%</span>
+                            <span class="field-value">S: {{ user.disc_profile.S }}%</span>
+                            <span class="field-value">C: {{ user.disc_profile.C }}%</span>
                         </div>
-
-                        <div class="field">
-                            <span class="field-label">Поколение</span>
-                            <span class="field-value {% if not user.generation %}empty{% endif %}">
-                                {{ user.get_generation_display|default:"Будет определено после указания возраста" }}
-                            </span>
-                        </div>
-
-                        <div class="field">
-                            <span class="field-label">Стиль управления</span>
-                            <span class="field-value {% if not user.get_leadership_style_display %}empty{% endif %}">
-                                {{ user.get_leadership_style_display|default:"Не указан" }}
-                            </span>
-                        </div>
-
-                    </div>
+                    {% else %}
+                        <span class="field-value empty">Надо пройти тест</span>
+                        <a href="{% url 'profile_disc_test' %}" class="btn-primary" style="margin-top: 10px; align-self: flex-start;">Пройти тест</a>
+                    {% endif %}
                 </div>
 
-                <div class="section-card">
-                    <p class="section-eyebrow">Личные данные</p>
-                    <div class="fields-grid">
-
-                        <div class="field">
-                            <span class="field-label">Полное имя</span>
-                            <span class="field-value {% if not user.get_full_name %}empty{% endif %}">
-                                {{ user.get_full_name|default:"Не указано" }}
-                            </span>
-                        </div>
-
-                        <div class="field">
-                            <span class="field-label">Возраст</span>
-                            <span class="field-value {% if not user.age %}empty{% endif %}">
-                                {% if user.age %}{{ user.age }} лет{% else %}Не указан{% endif %}
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <div class="divider"></div>
-                    <div class="actions">
-                        <a href="{% url 'profile_edit' %}" class="btn-primary">Редактировать</a>
-                        <a href="{% url 'logout' %}" class="btn-secondary">Выйти</a>
-                    </div>
+                <div class="field">
+                    <span class="field-label">Тип мотивации (Герчиков)</span>
+                    <span class="field-value {% if not user.get_gerchikov_type_display %}empty{% endif %}">
+                        {{ user.get_gerchikov_type_display|default:"Не указан" }}
+                    </span>
                 </div>
 
+                <div class="field">
+                    <span class="field-label">Поколение</span>
+                    <span class="field-value {% if not user.generation %}empty{% endif %}">
+                        {{ user.get_generation_display|default:"Будет определено после указания возраста" }}
+                    </span>
+                </div>
+
+                <div class="field">
+                    <span class="field-label">Стиль управления</span>
+                    <span class="field-value {% if not user.get_leadership_style_display %}empty{% endif %}">
+                        {{ user.get_leadership_style_display|default:"Не указан" }}
+                    </span>
+                </div>
             </div>
         </div>
 
-    </main>
+        <div class="section-card">
+            <p class="section-eyebrow">Личные данные</p>
+            <div class="fields-grid">
+                <div class="field">
+                    <span class="field-label">Полное имя</span>
+                    <span class="field-value {% if not user.get_full_name %}empty{% endif %}">
+                        {{ user.get_full_name|default:"Не указано" }}
+                    </span>
+                </div>
 
-</body>
-</html>
+                <div class="field">
+                    <span class="field-label">Возраст</span>
+                    <span class="field-value {% if not user.age %}empty{% endif %}">
+                        {% if user.age %}{{ user.age }} лет{% else %}Не указан{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="actions">
+                <a href="{% url 'profile_edit' %}" class="btn-primary">Редактировать</a>
+                <a href="{% url 'logout' %}" class="btn-secondary">Выйти</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,509 +1,364 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Builder — t2</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --black: #000000; --white: #FFFFFF; --pink: #FF3495;
-            --gray-bg: #F2F2F2; --gray-text: #666666; --border: #E0E0E0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
-        body {
-            font-family: var(--font-body);
-            background: var(--gray-bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
 
-        .header {
-            background: var(--black);
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+{% block title %}Team Builder — t2{% endblock %}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
+{% block extra_style %}
+<style>
+    .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 40px;
+    }
+    .page-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 13px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        margin-bottom: 32px;
+    }
+    .hero-card {
+        background: var(--black);
+        border-radius: 4px;
+        padding: 48px 52px;
+        margin-bottom: 16px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-card::before {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: var(--pink);
+    }
+    .hero-label {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 12px;
+    }
+    .hero-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 44px;
+        line-height: 0.95;
+        text-transform: uppercase;
+        color: var(--white);
+        letter-spacing: -1px;
+        margin-bottom: 16px;
+    }
+    .hero-desc {
+        font-size: 15px;
+        color: rgba(255, 255, 255, 0.5);
+        max-width: 440px;
+        line-height: 1.5;
+    }
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--pink);
+        color: var(--white);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 16px 32px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: transform 0.15s, background 0.15s;
+    }
+    .btn-primary:hover {
+        background: #ff1a80;
+        transform: translateY(-1px);
+    }
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .card {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 36px 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .card-eyebrow {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 10px;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 10px;
+    }
+    .card-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 28px;
+        text-transform: uppercase;
+        line-height: 1;
+        letter-spacing: -0.5px;
+        margin-bottom: 12px;
+    }
+    .card-desc {
+        font-size: 14px;
+        color: var(--gray-text);
+        line-height: 1.55;
+        margin-bottom: 28px;
+    }
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--black);
+        color: var(--white);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+        background: #222;
+    }
+    .teams-card {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 36px 40px;
+    }
+    .teams-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+    .teams-title-block .card-eyebrow {
+        margin-bottom: 8px;
+    }
+    .teams-title-block .card-title {
+        margin-bottom: 6px;
+    }
+    .teams-title-block .card-desc {
+        margin-bottom: 0;
+    }
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: var(--black);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 12px 20px;
+        border: 2px solid var(--black);
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+    }
+    .btn-create:hover {
+        background: var(--black);
+        color: var(--white);
+    }
+    .teams-list {
+        border-top: 1px solid var(--border);
+    }
+    .team-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .team-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .team-avatar {
+        width: 36px;
+        height: 36px;
+        background: var(--black);
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 14px;
+        color: var(--white);
+        flex-shrink: 0;
+    }
+    .team-name {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .team-actions {
+        display: flex;
+        gap: 4px;
+    }
+    .team-btn {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        text-decoration: none;
+        padding: 7px 12px;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        transition: border-color 0.15s, color 0.15s;
+    }
+    .team-btn:hover {
+        border-color: var(--black);
+        color: var(--black);
+    }
+    .team-btn.accent {
+        border-color: var(--pink);
+        color: var(--pink);
+    }
+    .team-btn.accent:hover {
+        background: var(--pink);
+        color: var(--white);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 40px 0 16px;
+    }
+    .empty-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+        opacity: 0.3;
+    }
+    .empty-text {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        margin-bottom: 24px;
+    }
+    @media (max-width: 768px) {
+        .page { padding: 24px 20px; }
+        .hero-card { grid-template-columns: 1fr; padding: 32px 28px; }
+        .hero-title { font-size: 32px; }
+        .grid-2 { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
 
-        .logo-img {
-            height: 44px;
-            width: auto;
-            display: block;
-        }
+{% block nav %}
+<a href="/" class="nav-link active">Главная</a>
+<a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+<a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+<a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+{% if user.is_authenticated %}
+    <span class="header-username"> {{ user.username }}</span>
+    <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+{% else %}
+    <a href="{% url 'login' %}" class="btn-logout">Войти</a>
+{% endif %}
+{% endblock %}
 
-        .logo-app-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-        }
+{% block content %}
+<p class="page-title">Главная</p>
 
-        .header-user {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+<div class="hero-card">
+    <div>
+        <p class="hero-label">Поиск</p>
+        <h2 class="hero-title">Найти<br>сотрудника</h2>
+        <p class="hero-desc">Найдите нужного специалиста по имени, роли или навыкам с помощью конструктора профилей</p>
+    </div>
+    <a href="{% url 'create_ideal_profile' %}" class="btn-primary">
+        Перейти в конструктор
+        <span>→</span>
+    </a>
+</div>
 
-        .header-username {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            font-weight: 500;
-        }
+<div class="grid-2">
+    <div class="card">
+        <p class="card-eyebrow">Аккаунт</p>
+        <h3 class="card-title">Мой профиль</h3>
+        <p class="card-desc">Просмотр и редактирование вашего профиля: DISC, мотивация, поколение</p>
+        <a href="{% url 'profile' %}" class="btn-secondary">Перейти →</a>
+    </div>
 
-        .btn-logout {
-            font-family: var(--font-heading);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--pink);
-            text-decoration: none;
-            border: 1px solid var(--pink);
-            padding: 6px 14px;
-            border-radius: 2px;
-            transition: background 0.15s, color 0.15s;
-        }
+    <div class="card" style="background: var(--pink);">
+        <p class="card-eyebrow" style="color: rgba(255,255,255,0.6);">Онбординг</p>
+        <h3 class="card-title" style="color: var(--white);">Добавить<br>сотрудника</h3>
+        <p class="card-desc" style="color: rgba(255,255,255,0.7);">Отправьте сотруднику ссылку для заполнения анкеты и прохождения DISC-теста</p>
+        <a href="{% url 'onboarding' %}" class="btn-secondary" style="background: var(--white); color: var(--black);">Ссылка для сотрудника →</a>
+    </div>
+</div>
 
-        .btn-logout:hover {
-            background: var(--pink);
-            color: var(--white);
-        }
-
-        .page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 48px 40px;
-        }
-
-        .page-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 13px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            margin-bottom: 32px;
-        }
-
-        .hero-card {
-            background: var(--black);
-            border-radius: 4px;
-            padding: 48px 52px;
-            margin-bottom: 16px;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            gap: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            background: var(--pink);
-        }
-
-        .hero-label {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--pink);
-            margin-bottom: 12px;
-        }
-
-        .hero-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 44px;
-            line-height: 0.95;
-            text-transform: uppercase;
-            color: var(--white);
-            letter-spacing: -1px;
-            margin-bottom: 16px;
-        }
-
-        .hero-desc {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.5);
-            max-width: 440px;
-            line-height: 1.5;
-        }
-
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--pink);
-            color: var(--white);
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 13px;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 16px 32px;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: transform 0.15s, background 0.15s;
-        }
-
-        .btn-primary:hover {
-            background: #ff1a80;
-            transform: translateY(-1px);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 36px 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-eyebrow {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 10px;
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            color: var(--pink);
-            margin-bottom: 10px;
-        }
-
-        .card-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 28px;
-            text-transform: uppercase;
-            line-height: 1;
-            letter-spacing: -0.5px;
-            margin-bottom: 12px;
-        }
-
-        .card-desc {
-            font-size: 14px;
-            color: var(--gray-text);
-            line-height: 1.55;
-            margin-bottom: 28px;
-        }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--black);
-            color: var(--white);
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .btn-secondary:hover {
-            background: #222;
-        }
-
-        .teams-card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 36px 40px;
-        }
-
-        .teams-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 28px;
-        }
-
-        .teams-title-block .card-eyebrow {
-            margin-bottom: 8px;
-        }
-
-        .teams-title-block .card-title {
-            margin-bottom: 6px;
-        }
-
-        .teams-title-block .card-desc {
-            margin-bottom: 0;
-        }
-
-        .btn-create {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            color: var(--black);
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 12px 20px;
-            border: 2px solid var(--black);
-            border-radius: 2px;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-            white-space: nowrap;
-        }
-
-        .btn-create:hover {
-            background: var(--black);
-            color: var(--white);
-        }
-
-        .teams-list {
-            border-top: 1px solid var(--border);
-        }
-
-        .team-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .team-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .team-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--black);
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 14px;
-            color: var(--white);
-            flex-shrink: 0;
-        }
-
-        .team-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .team-actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        .team-btn {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            text-decoration: none;
-            padding: 7px 12px;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            transition: border-color 0.15s, color 0.15s;
-        }
-
-        .team-btn:hover {
-            border-color: var(--black);
-            color: var(--black);
-        }
-
-        .team-btn.accent {
-            border-color: var(--pink);
-            color: var(--pink);
-        }
-
-        .team-btn.accent:hover {
-            background: var(--pink);
-            color: var(--white);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 0 16px;
-        }
-
-        .empty-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-            opacity: 0.3;
-        }
-
-        .empty-text {
-            font-family: var(--font-heading);
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            margin-bottom: 24px;
-        }
-
-        .card-deco {
-            position: absolute;
-            right: 32px;
-            bottom: -12px;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 80px;
-            color: rgba(0, 0, 0, 0.04);
-            letter-spacing: -3px;
-            line-height: 1;
-            pointer-events: none;
-        }
-        @media (max-width: 768px) {
-            .page { padding: 24px 20px; }
-            .hero-card { grid-template-columns: 1fr; padding: 32px 28px; }
-            .hero-title { font-size: 32px; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .header { padding: 0 20px; }
-        }
-    </style>
-</head>
-<body>
-
-    <header class="header">
-        <a href="/" class="logo">
-            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Бренд года" class="logo-img">
-            <span class="logo-app-name">Team Builder</span>
-        </a>
-        <div class="header-user">
-            {% if user.is_authenticated %}
-                <span class="header-username">👋 {{ user.username }}</span>
-                <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-logout">Войти</a>
-            {% endif %}
+<div class="teams-card">
+    <div class="teams-header">
+        <div class="teams-title-block">
+            <p class="card-eyebrow">Управление</p>
+            <h3 class="card-title">Мои команды</h3>
+            <p class="card-desc">Редактируйте участников, сравнивайте результаты и отслеживайте состав</p>
         </div>
-    </header>
+        <a href="{% url 'team_create' %}" class="btn-create">+ Создать</a>
+    </div>
 
-    <main class="page">
-
-        <p class="page-title">Главная</p>
-
-        <div class="hero-card">
-            <div>
-                <p class="hero-label">Поиск</p>
-                <h2 class="hero-title">Найти<br>сотрудника</h2>
-                <p class="hero-desc">Найдите нужного специалиста по имени, роли или навыкам с помощью конструктора профилей</p>
-            </div>
-            <a href="{% url 'create_ideal_profile' %}" class="btn-primary">
-                Перейти в конструктор
-                <span>→</span>
-            </a>
-        </div>
-
-        <div class="grid-2">
-
-            <div class="card">
-                <p class="card-eyebrow">Аккаунт</p>
-                <h3 class="card-title">Мой профиль</h3>
-                <p class="card-desc">Просмотр и редактирование вашего профиля: DISC, мотивация, поколение</p>
-                <a href="{% url 'profile' %}" class="btn-secondary">Перейти →</a>
-            </div>
-
-            <div class="card" style="background: var(--pink);">
-                <p class="card-eyebrow" style="color: rgba(255,255,255,0.6);">Онбординг</p>
-                <h3 class="card-title" style="color: var(--white);">Добавить<br>сотрудника</h3>
-                <p class="card-desc" style="color: rgba(255,255,255,0.7);">Отправьте сотруднику ссылку для заполнения анкеты и прохождения DISC-теста</p>
-                <a href="{% url 'onboarding' %}" class="btn-secondary" style="background: var(--white); color: var(--black);">Ссылка для сотрудника →</a>
-            </div>
-
-        </div>
-
-        <div class="teams-card">
-            <div class="teams-header">
-                <div class="teams-title-block">
-                    <p class="card-eyebrow">Управление</p>
-                    <h3 class="card-title">Мои команды</h3>
-                    <p class="card-desc">Редактируйте участников, сравнивайте результаты и отслеживайте состав</p>
-                </div>
-                <a href="{% url 'team_create' %}" class="btn-create">+ Создать</a>
-            </div>
-
-            {% if teams %}
-                <div class="teams-list">
-                    {% for team in teams %}
-                        <div class="team-item">
-                            <div class="team-left">
-                                <div class="team-avatar">{{ team.name|slice:":2"|upper }}</div>
-                                <span class="team-name">{{ team.name }}</span>
-                            </div>
-                            <div class="team-actions">
-                                <a href="{% url 'team_detail' team.id %}" class="team-btn">Просмотр</a>
-                                <a href="{% url 'team_edit' team.id %}" class="team-btn">Редактировать</a>
-                                <a href="{% url 'create_ideal_profile' %}" class="team-btn accent">Рекомендации</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="teams-list">
-                    <div class="empty-state">
-                        <div class="empty-icon">◻</div>
-                        <p class="empty-text">У вас пока нет команд</p>
-                        <a href="{% url 'team_create' %}" class="btn-primary">+ Создать команду</a>
+    {% if teams %}
+        <div class="teams-list">
+            {% for team in teams %}
+                <div class="team-item">
+                    <div class="team-left">
+                        <div class="team-avatar">{{ team.name|slice:":2"|upper }}</div>
+                        <span class="team-name">{{ team.name }}</span>
+                    </div>
+                    <div class="team-actions">
+                        <a href="{% url 'team_detail' team.id %}" class="team-btn">Просмотр</a>
+                        <a href="{% url 'team_edit' team.id %}" class="team-btn">Редактировать</a>
+                        <a href="{% url 'create_ideal_profile' %}" class="team-btn accent">Рекомендации</a>
                     </div>
                 </div>
-            {% endif %}
+            {% endfor %}
         </div>
-
-    </main>
-
-</body>
-</html>
+    {% else %}
+        <div class="teams-list">
+            <div class="empty-state">
+                <div class="empty-icon">◻</div>
+                <p class="empty-text">У вас пока нет команд</p>
+                <a href="{% url 'team_create' %}" class="btn-primary">+ Создать команду</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,63 +1,202 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор профиля — t2 Team Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/constructor.css' %}">
-</head>
-<body>
 
-    <header class="header">
-        <a href="/" class="logo">
-            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Бренд года" class="logo-img">
-            <span class="logo-app-name">Team Builder</span>
-        </a>
-        <nav class="header-nav">
-            <a href="/" class="nav-link">Главная</a>
-            <a href="/profile/" class="nav-link">Профиль</a>
-            <a href="/constructor/" class="nav-link active">Конструктор</a>
-        </nav>
-    </header>
+{% block title %}Конструктор профиля — t2 Team Builder{% endblock %}
 
-    <div class="hero-banner">
-        <div class="hero-inner">
-            <p class="hero-eyebrow">Конструктор профилей</p>
-            <h1 class="hero-title">Идеальный<br>сотрудник</h1>
-            <p class="hero-desc">Заполните параметры — и мы найдём кандидатов, которые точно впишутся в вашу команду</p>
-        </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/constructor.css' %}">
+{% endblock %}
+
+{% block extra_style %}
+<style>
+    .hero-banner {
+        background: var(--black);
+        padding: 52px 40px 48px;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-banner::before {
+        content: 'КОНСТРУКТОР';
+        position: absolute;
+        right: -20px;
+        bottom: -40px;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 130px;
+        color: rgba(255,255,255,0.03);
+        letter-spacing: -5px;
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+    }
+    .hero-banner::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: var(--pink);
+    }
+    .hero-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .hero-eyebrow {
+        font-family: var(--font-heading);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 14px;
+    }
+    .hero-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 56px;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        line-height: 0.9;
+        color: var(--white);
+        margin-bottom: 18px;
+    }
+    .hero-desc {
+        font-size: 15px;
+        color: rgba(255,255,255,0.5);
+        max-width: 520px;
+        line-height: 1.6;
+    }
+    .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 40px;
+    }
+    .form-card {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 44px 48px;
+        position: relative;
+    }
+    .form-section-title {
+        font-family: var(--font-heading);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .form-section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+    .steps-bar {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 36px;
+    }
+    .step {
+        height: 3px;
+        flex: 1;
+        background: var(--border);
+        border-radius: 2px;
+    }
+    .step.done { background: var(--black); }
+    .step.active { background: var(--pink); }
+    .submit-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 32px;
+        margin-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+    .submit-hint {
+        font-size: 13px;
+        color: var(--gray-text);
+        max-width: 320px;
+        line-height: 1.5;
+    }
+    .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--pink);
+        color: var(--white);
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 14px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 2px;
+        padding: 18px 40px;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.15s;
+    }
+    .btn-submit:hover {
+        background: #ff1a80;
+        transform: translateY(-1px);
+    }
+    .btn-submit .arrow {
+        font-size: 20px;
+        font-weight: 400;
+    }
+    @media (max-width: 768px) {
+        .hero-banner { padding: 36px 20px; }
+        .hero-title { font-size: 36px; }
+        .page { padding: 24px 20px; }
+        .form-card { padding: 28px 24px; }
+        .submit-row { flex-direction: column; gap: 20px; align-items: stretch; }
+        .btn-submit { justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block nav %}
+<a href="/" class="nav-link">Главная</a>
+<a href="{% url 'create_ideal_profile' %}" class="nav-link active">Конструктор</a>
+<a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+<a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+<a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+    <div class="hero-inner">
+        <p class="hero-eyebrow">Конструктор профилей</p>
+        <h1 class="hero-title">Идеальный<br>сотрудник</h1>
+        <p class="hero-desc">Заполните параметры — и мы найдём кандидатов, которые точно впишутся в вашу команду</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <div class="steps-bar">
+        <div class="step done"></div>
+        <div class="step done"></div>
+        <div class="step active"></div>
+        <div class="step"></div>
     </div>
 
-    <main class="page">
-        <div class="form-card">
+    <p class="form-section-title">Параметры поиска</p>
 
-            <div class="steps-bar">
-                <div class="step done"></div>
-                <div class="step done"></div>
-                <div class="step active"></div>
-                <div class="step"></div>
-            </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
 
-            <p class="form-section-title">Параметры поиска</p>
-
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-
-                <div class="submit-row">
-                    <p class="submit-hint">На основе ваших ответов мы подберём наиболее подходящих кандидатов</p>
-                    <button type="submit" class="btn-submit">
-                        Получить рекомендацию
-                        <span class="arrow">→</span>
-                    </button>
-                </div>
-            </form>
-
+        <div class="submit-row">
+            <p class="submit-hint">На основе ваших ответов мы подберём наиболее подходящих кандидатов</p>
+            <button type="submit" class="btn-submit">
+                Получить рекомендацию
+                <span class="arrow">→</span>
+            </button>
         </div>
-    </main>
-
-</body>
-</html>
+    </form>
+</div>
+{% endblock %}

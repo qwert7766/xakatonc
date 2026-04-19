@@ -8,7 +8,7 @@ from profiles.views import onboarding_start, onboarding_disc, onboarding_complet
 from recommendations.views import create_ideal_profile, show_recommendation, hire_employee, reject_employee, postpone_employee, remove_from_pending
 from profiles.views import (
     team_list, team_create, team_detail, team_edit, team_delete,
-    team_add_member, team_remove_member
+    team_add_member, team_remove_member, team_remove_member_with_rating
 )
 
 urlpatterns = [
@@ -37,7 +37,7 @@ urlpatterns = [
     path('join/disc/', onboarding_disc, name='onboarding_disc'),
     path('join/done/', onboarding_complete, name='onboarding_complete'),
 
-    #Команды 
+    # Команды 
     path('teams/', team_list, name='team_list'),
     path('teams/create/', team_create, name='team_create'),
     path('teams/<int:team_id>/', team_detail, name='team_detail'),
@@ -45,4 +45,5 @@ urlpatterns = [
     path('teams/<int:team_id>/delete/', team_delete, name='team_delete'),
     path('teams/<int:team_id>/add-member/', team_add_member, name='team_add_member'),
     path('teams/<int:team_id>/remove-member/<int:employee_id>/', team_remove_member, name='team_remove_member'),
+    path('teams/<int:team_id>/remove-member-rating/<int:employee_id>/', team_remove_member_with_rating, name='team_remove_member_with_rating'),
 ]

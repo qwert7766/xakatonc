@@ -1,149 +1,146 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактирование профиля — t2 Team Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
-    <style>
-        .page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 48px 40px;
-        }
-        .breadcrumb {
-            font-family: var(--font-heading);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            margin-bottom: 8px;
-        }
-        .page-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 52px;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            line-height: 0.9;
-            margin-bottom: 28px;
-        }
-        .card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 32px 36px;
-        }
-        .fields-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px 24px;
-        }
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .field.full { grid-column: 1 / -1; }
-        .field label {
-            font-family: var(--font-heading);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-        }
-        .field input,
-        .field select,
-        .field textarea {
-            width: 100%;
-            border: 1px solid var(--border);
-            border-radius: 2px;
-            padding: 12px 14px;
-            font: inherit;
-            background: #fff;
-        }
-        .field textarea { resize: vertical; }
-        .errors {
-            color: #c81e1e;
-            font-size: 14px;
-        }
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 28px;
-        }
-        .btn-primary,
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 13px 24px;
-            border-radius: 2px;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background: var(--pink);
-            color: var(--white);
-            border: none;
-        }
-        .btn-secondary {
-            background: transparent;
-            color: var(--black);
-            border: 2px solid var(--black);
-        }
-        @media (max-width: 768px) {
-            .page { padding: 24px 20px; }
-            .page-title { font-size: 36px; }
-            .fields-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <a href="/" class="logo">
-            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
-            <span class="logo-app-name">Team Builder</span>
-        </a>
-        <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
-    </header>
 
-    <main class="page">
-        <p class="breadcrumb">Аккаунт</p>
-        <h1 class="page-title">Редактировать<br>профиль</h1>
+{% block title %}Редактирование профиля — t2 Team Builder{% endblock %}
 
-        <div class="card">
-            <form method="post">
-                {% csrf_token %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
 
-                <div class="fields-grid">
-                    {% for field in form %}
-                        <div class="field">
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {% if field.errors %}
-                                <div class="errors">{{ field.errors }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+{% block extra_style %}
+<style>
+    .page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 40px;
+    }
+    .breadcrumb {
+        font-family: var(--font-heading);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+        margin-bottom: 8px;
+    }
+    .page-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 52px;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        line-height: 0.9;
+        margin-bottom: 28px;
+    }
+    .card {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 32px 36px;
+    }
+    .fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 24px;
+    }
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .field.full { grid-column: 1 / -1; }
+    .field label {
+        font-family: var(--font-heading);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+    }
+    .field input,
+    .field select,
+    .field textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        padding: 12px 14px;
+        font: inherit;
+        background: #fff;
+    }
+    .field textarea { resize: vertical; }
+    .errors {
+        color: #c81e1e;
+        font-size: 14px;
+    }
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 28px;
+    }
+    .btn-primary,
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 13px 24px;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+    .btn-primary {
+        background: var(--pink);
+        color: var(--white);
+        border: none;
+    }
+    .btn-secondary {
+        background: transparent;
+        color: var(--black);
+        border: 2px solid var(--black);
+    }
+    @media (max-width: 768px) {
+        .page { padding: 24px 20px; }
+        .page-title { font-size: 36px; }
+        .fields-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block nav %}
+<a href="/" class="nav-link">Главная</a>
+<a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+<a href="{% url 'profile' %}" class="nav-link active">Профиль</a>
+<a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+<a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+{% endblock %}
+
+{% block content %}
+<p class="breadcrumb">Аккаунт</p>
+<h1 class="page-title">Редактировать<br>профиль</h1>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="fields-grid">
+            {% for field in form %}
+                <div class="field">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="errors">{{ field.errors }}</div>
+                    {% endif %}
                 </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn-primary">Сохранить</button>
-                    <a href="{% url 'profile' %}" class="btn-secondary">Отмена</a>
-                </div>
-            </form>
+            {% endfor %}
         </div>
-    </main>
-</body>
-</html>
+
+        <div class="actions">
+            <button type="submit" class="btn-primary">Сохранить</button>
+            <a href="{% url 'profile' %}" class="btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

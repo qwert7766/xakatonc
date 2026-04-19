@@ -1,525 +1,420 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Результат DISC — t2 Team Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --black: #000000;
-            --white: #FFFFFF;
-            --pink: #FF3495;
-            --gray-bg: #F2F2F2;
-            --gray-text: #666666;
-            --border: #E0E0E0;
-            --font-heading: 'Barlow Condensed', sans-serif;
-            --font-body: 'Barlow Semi Condensed', sans-serif;
-        }
+{% block title %}Результат DISC — t2 Team Builder{% endblock %}
 
-        body {
-            font-family: var(--font-body);
-            background: var(--gray-bg);
-            color: var(--black);
-            min-height: 100vh;
-        }
+{% block extra_style %}
+<style>
+    .hero-banner {
+        background: var(--black);
+        padding: 52px 40px 48px;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-banner::before {
+        content: 'РЕЗУЛЬТАТ';
+        position: absolute;
+        right: -10px;
+        bottom: -36px;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 140px;
+        color: rgba(255,255,255,0.03);
+        letter-spacing: -5px;
+        line-height: 1;
+        pointer-events: none;
+    }
+    .hero-banner::after {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 5px;
+        background: var(--pink);
+    }
+    .hero-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .hero-eyebrow {
+        font-family: var(--font-heading);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 12px;
+    }
+    .hero-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 40px;
+    }
+    .hero-title {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 52px;
+        text-transform: uppercase;
+        letter-spacing: -2px;
+        line-height: 0.92;
+        color: var(--white);
+        margin-bottom: 14px;
+    }
+    .hero-name {
+        font-size: 15px;
+        color: rgba(255,255,255,0.5);
+    }
+    .hero-name strong { color: var(--white); font-weight: 600; }
+    .dominant-badge {
+        flex-shrink: 0;
+        background: var(--pink);
+        border-radius: 4px;
+        padding: 20px 32px;
+        text-align: center;
+    }
+    .dominant-label {
+        font-family: var(--font-heading);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 6px;
+    }
+    .dominant-type {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 56px;
+        color: var(--white);
+        line-height: 1;
+    }
+    .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 40px;
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 16px;
+        align-items: start;
+    }
+    .scores-card {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 40px 44px;
+    }
+    .section-eyebrow {
+        font-family: var(--font-heading);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 3.5px;
+        text-transform: uppercase;
+        color: var(--pink);
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .section-eyebrow::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+    .score-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-letter {
+        width: 44px;
+        height: 44px;
+        background: var(--black);
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 22px;
+        color: var(--white);
+        flex-shrink: 0;
+    }
+    .score-letter.dominant { background: var(--pink); }
+    .score-bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .score-bar-label {
+        display: flex;
+        justify-content: space-between;
+    }
+    .score-name {
+        font-family: var(--font-heading);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--gray-text);
+    }
+    .score-pct {
+        font-family: var(--font-heading);
+        font-size: 13px;
+        font-weight: 900;
+        color: var(--black);
+    }
+    .score-bar-bg {
+        height: 8px;
+        background: var(--gray-bg);
+        border-radius: 1px;
+        overflow: hidden;
+    }
+    .score-bar-fill {
+        height: 100%;
+        background: var(--black);
+        border-radius: 1px;
+        transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .score-bar-fill.dominant { background: var(--pink); }
+    .info-card {
+        background: var(--black);
+        border-radius: 4px;
+        padding: 36px 36px;
+    }
+    .info-card .section-eyebrow { color: var(--pink); }
+    .info-card .section-eyebrow::after { background: rgba(255,255,255,0.1); }
+    .disc-descriptions { display: flex; flex-direction: column; gap: 16px; }
+    .disc-desc-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .disc-desc-letter {
+        width: 28px;
+        height: 28px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-heading);
+        font-weight: 900;
+        font-size: 14px;
+        color: rgba(255,255,255,0.5);
+        flex-shrink: 0;
+    }
+    .disc-desc-item.dominant .disc-desc-letter {
+        background: var(--pink);
+        color: var(--white);
+    }
+    .disc-desc-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .disc-desc-name {
+        font-family: var(--font-heading);
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--white);
+    }
+    .disc-desc-caption {
+        font-size: 12px;
+        color: rgba(255,255,255,0.4);
+        line-height: 1.4;
+    }
+    .actions-card {
+        grid-column: 1 / -1;
+        background: var(--white);
+        border-radius: 4px;
+        padding: 28px 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+    }
+    .actions-text {
+        font-size: 14px;
+        color: var(--gray-text);
+    }
+    .actions-btns {
+        display: flex;
+        gap: 10px;
+    }
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--pink);
+        color: var(--white);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 13px 24px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #ff1a80; }
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--black);
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 12px 24px;
+        border: 2px solid var(--black);
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+    }
+    .btn-secondary:hover { background: var(--black); color: var(--white); }
+    @media (max-width: 900px) {
+        .page { grid-template-columns: 1fr; padding: 24px 20px; }
+        .hero-row { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .hero-banner { padding: 32px 20px; }
+        .hero-title { font-size: 36px; }
+        .scores-card, .info-card { padding: 28px 24px; }
+        .actions-card { flex-direction: column; align-items: flex-start; padding: 24px; }
+    }
+</style>
+{% endblock %}
 
-        .header {
-            background: var(--black);
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+{% block nav %}
+<a href="/" class="nav-link">Главная</a>
+<a href="{% url 'create_ideal_profile' %}" class="nav-link">Конструктор</a>
+<a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+<a href="{% url 'team_list' %}" class="nav-link">Команды</a>
+<a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+{% endblock %}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
+{% block content %}
+<div class="hero-banner">
+    <div class="hero-inner">
+        <div class="hero-row">
+            <div>
+                <p class="hero-eyebrow">DISC — Результат тестирования</p>
+                <h1 class="hero-title">Профиль<br>готов</h1>
+                <p class="hero-name">Сотрудник: <strong>{{ employee.fio }}</strong></p>
+            </div>
+            <div class="dominant-badge">
+                <p class="dominant-label">Доминирующий тип</p>
+                <div class="dominant-type">{{ primary_type }}</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        .logo-img {
-            height: 44px;
-            width: auto;
-            display: block;
-        }
+<div class="scores-card">
+    <p class="section-eyebrow">Результаты по шкалам</p>
 
-        .logo-app-name {
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--white);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.5;
-            padding-left: 12px;
-            border-left: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .hero-banner {
-            background: var(--black);
-            padding: 52px 40px 48px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-banner::before {
-            content: 'РЕЗУЛЬТАТ';
-            position: absolute;
-            right: -10px;
-            bottom: -36px;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 140px;
-            color: rgba(255,255,255,0.03);
-            letter-spacing: -5px;
-            line-height: 1;
-            pointer-events: none;
-        }
-
-        .hero-banner::after {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 5px;
-            background: var(--pink);
-        }
-
-        .hero-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .hero-eyebrow {
-            font-family: var(--font-heading);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--pink);
-            margin-bottom: 12px;
-        }
-
-        .hero-row {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 40px;
-        }
-
-        .hero-title {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 52px;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            line-height: 0.92;
-            color: var(--white);
-            margin-bottom: 14px;
-        }
-
-        .hero-name {
-            font-size: 15px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .hero-name strong { color: var(--white); font-weight: 600; }
-
-        .dominant-badge {
-            flex-shrink: 0;
-            background: var(--pink);
-            border-radius: 4px;
-            padding: 20px 32px;
-            text-align: center;
-        }
-
-        .dominant-label {
-            font-family: var(--font-heading);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 6px;
-        }
-
-        .dominant-type {
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 56px;
-            color: var(--white);
-            line-height: 1;
-        }
-
-        .page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 40px;
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 16px;
-            align-items: start;
-        }
-
-        .scores-card {
-            background: var(--white);
-            border-radius: 4px;
-            padding: 40px 44px;
-        }
-
-        .section-eyebrow {
-            font-family: var(--font-heading);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 3.5px;
-            text-transform: uppercase;
-            color: var(--pink);
-            margin-bottom: 28px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .section-eyebrow::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        .score-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .score-row:last-child { margin-bottom: 0; }
-
-        .score-letter {
-            width: 44px;
-            height: 44px;
-            background: var(--black);
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 22px;
-            color: var(--white);
-            flex-shrink: 0;
-        }
-
-        .score-letter.dominant { background: var(--pink); }
-
-        .score-bar-wrap {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .score-bar-label {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .score-name {
-            font-family: var(--font-heading);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-        }
-
-        .score-pct {
-            font-family: var(--font-heading);
-            font-size: 13px;
-            font-weight: 900;
-            color: var(--black);
-        }
-
-        .score-bar-bg {
-            height: 8px;
-            background: var(--gray-bg);
-            border-radius: 1px;
-            overflow: hidden;
-        }
-
-        .score-bar-fill {
-            height: 100%;
-            background: var(--black);
-            border-radius: 1px;
-            transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
-        }
-
-        .score-bar-fill.dominant { background: var(--pink); }
-
-        .info-card {
-            background: var(--black);
-            border-radius: 4px;
-            padding: 36px 36px;
-        }
-
-        .info-card .section-eyebrow { color: var(--pink); }
-        .info-card .section-eyebrow::after { background: rgba(255,255,255,0.1); }
-
-        .disc-descriptions { display: flex; flex-direction: column; gap: 16px; }
-
-        .disc-desc-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .disc-desc-letter {
-            width: 28px;
-            height: 28px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 14px;
-            color: rgba(255,255,255,0.5);
-            flex-shrink: 0;
-        }
-
-        .disc-desc-item.dominant .disc-desc-letter {
-            background: var(--pink);
-            color: var(--white);
-        }
-
-        .disc-desc-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .disc-desc-name {
-            font-family: var(--font-heading);
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--white);
-        }
-
-        .disc-desc-caption {
-            font-size: 12px;
-            color: rgba(255,255,255,0.4);
-            line-height: 1.4;
-        }
-
-        .actions-card {
-            grid-column: 1 / -1;
-            background: var(--white);
-            border-radius: 4px;
-            padding: 28px 44px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .actions-text {
-            font-size: 14px;
-            color: var(--gray-text);
-        }
-
-        .actions-btns {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--pink);
-            color: var(--white);
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 13px 24px;
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .btn-primary:hover { background: #ff1a80; }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            color: var(--black);
-            font-family: var(--font-heading);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 12px 24px;
-            border: 2px solid var(--black);
-            border-radius: 2px;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-        }
-        .btn-secondary:hover { background: var(--black); color: var(--white); }
-
-        @media (max-width: 900px) {
-            .page { grid-template-columns: 1fr; padding: 24px 20px; }
-            .hero-row { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .hero-banner { padding: 32px 20px; }
-            .hero-title { font-size: 36px; }
-            .scores-card, .info-card { padding: 28px 24px; }
-            .actions-card { flex-direction: column; align-items: flex-start; padding: 24px; }
-            .header { padding: 0 20px; }
-        }
-    </style>
-</head>
-<body>
-
-    <header class="header">
-        <a href="/" class="logo">
-             <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Бренд года" class="logo-img">
-            <span class="logo-app-name">Team Builder</span>
-        </a>
-    </header>
-
-    <div class="hero-banner">
-        <div class="hero-inner">
-            <div class="hero-row">
-                <div>
-                    <p class="hero-eyebrow">DISC — Результат тестирования</p>
-                    <h1 class="hero-title">Профиль<br>готов</h1>
-                    <p class="hero-name">Сотрудник: <strong>{{ employee.fio }}</strong></p>
-                </div>
-                <div class="dominant-badge">
-                    <p class="dominant-label">Доминирующий тип</p>
-                    <div class="dominant-type">{{ primary_type }}</div>
-                </div>
+    <div class="score-row">
+        <div class="score-letter {% if primary_type == 'D' %}dominant{% endif %}">D</div>
+        <div class="score-bar-wrap">
+            <div class="score-bar-label">
+                <span class="score-name">Доминирование</span>
+                <span class="score-pct">{{ scores.D }}%</span>
+            </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill {% if primary_type == 'D' %}dominant{% endif %}" style="width: {{ scores.D }}%"></div>
             </div>
         </div>
     </div>
 
-    <main class="page">
-
-        <div class="scores-card">
-            <p class="section-eyebrow">Результаты по шкалам</p>
-
-            <div class="score-row">
-                <div class="score-letter {% if primary_type == 'D' %}dominant{% endif %}">D</div>
-                <div class="score-bar-wrap">
-                    <div class="score-bar-label">
-                        <span class="score-name">Доминирование</span>
-                        <span class="score-pct">{{ scores.D }}%</span>
-                    </div>
-                    <div class="score-bar-bg">
-                        <div class="score-bar-fill {% if primary_type == 'D' %}dominant{% endif %}" style="width: {{ scores.D }}%"></div>
-                    </div>
-                </div>
+    <div class="score-row">
+        <div class="score-letter {% if primary_type == 'I' %}dominant{% endif %}">I</div>
+        <div class="score-bar-wrap">
+            <div class="score-bar-label">
+                <span class="score-name">Влияние</span>
+                <span class="score-pct">{{ scores.I }}%</span>
             </div>
-
-            <div class="score-row">
-                <div class="score-letter {% if primary_type == 'I' %}dominant{% endif %}">I</div>
-                <div class="score-bar-wrap">
-                    <div class="score-bar-label">
-                        <span class="score-name">Влияние</span>
-                        <span class="score-pct">{{ scores.I }}%</span>
-                    </div>
-                    <div class="score-bar-bg">
-                        <div class="score-bar-fill {% if primary_type == 'I' %}dominant{% endif %}" style="width: {{ scores.I }}%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="score-row">
-                <div class="score-letter {% if primary_type == 'S' %}dominant{% endif %}">S</div>
-                <div class="score-bar-wrap">
-                    <div class="score-bar-label">
-                        <span class="score-name">Стабильность</span>
-                        <span class="score-pct">{{ scores.S }}%</span>
-                    </div>
-                    <div class="score-bar-bg">
-                        <div class="score-bar-fill {% if primary_type == 'S' %}dominant{% endif %}" style="width: {{ scores.S }}%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="score-row">
-                <div class="score-letter {% if primary_type == 'C' %}dominant{% endif %}">C</div>
-                <div class="score-bar-wrap">
-                    <div class="score-bar-label">
-                        <span class="score-name">Соответствие</span>
-                        <span class="score-pct">{{ scores.C }}%</span>
-                    </div>
-                    <div class="score-bar-bg">
-                        <div class="score-bar-fill {% if primary_type == 'C' %}dominant{% endif %}" style="width: {{ scores.C }}%"></div>
-                    </div>
-                </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill {% if primary_type == 'I' %}dominant{% endif %}" style="width: {{ scores.I }}%"></div>
             </div>
         </div>
+    </div>
 
-        <div class="info-card">
-            <p class="section-eyebrow">Типология</p>
-            <div class="disc-descriptions">
-                <div class="disc-desc-item {% if primary_type == 'D' %}dominant{% endif %}">
-                    <div class="disc-desc-letter">D</div>
-                    <div class="disc-desc-text">
-                        <span class="disc-desc-name">Доминирование</span>
-                        <span class="disc-desc-caption">Решительность, напористость, ориентация на результат</span>
-                    </div>
-                </div>
-                <div class="disc-desc-item {% if primary_type == 'I' %}dominant{% endif %}">
-                    <div class="disc-desc-letter">I</div>
-                    <div class="disc-desc-text">
-                        <span class="disc-desc-name">Влияние</span>
-                        <span class="disc-desc-caption">Общительность, оптимизм, умение убеждать</span>
-                    </div>
-                </div>
-                <div class="disc-desc-item {% if primary_type == 'S' %}dominant{% endif %}">
-                    <div class="disc-desc-letter">S</div>
-                    <div class="disc-desc-text">
-                        <span class="disc-desc-name">Стабильность</span>
-                        <span class="disc-desc-caption">Надёжность, терпение, командная работа</span>
-                    </div>
-                </div>
-                <div class="disc-desc-item {% if primary_type == 'C' %}dominant{% endif %}">
-                    <div class="disc-desc-letter">C</div>
-                    <div class="disc-desc-text">
-                        <span class="disc-desc-name">Соответствие</span>
-                        <span class="disc-desc-caption">Точность, аналитичность, следование правилам</span>
-                    </div>
-                </div>
+    <div class="score-row">
+        <div class="score-letter {% if primary_type == 'S' %}dominant{% endif %}">S</div>
+        <div class="score-bar-wrap">
+            <div class="score-bar-label">
+                <span class="score-name">Стабильность</span>
+                <span class="score-pct">{{ scores.S }}%</span>
+            </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill {% if primary_type == 'S' %}dominant{% endif %}" style="width: {{ scores.S }}%"></div>
             </div>
         </div>
+    </div>
 
-        <div class="actions-card">
-            <p class="actions-text">Результаты сохранены в профиле сотрудника</p>
-            <div class="actions-btns">
-                <a href="/employees/{{ employee.id }}/disc/" class="btn-secondary">Пройти заново</a>
-                <a href="/" class="btn-primary">На главную →</a>
+    <div class="score-row">
+        <div class="score-letter {% if primary_type == 'C' %}dominant{% endif %}">C</div>
+        <div class="score-bar-wrap">
+            <div class="score-bar-label">
+                <span class="score-name">Соответствие</span>
+                <span class="score-pct">{{ scores.C }}%</span>
+            </div>
+            <div class="score-bar-bg">
+                <div class="score-bar-fill {% if primary_type == 'C' %}dominant{% endif %}" style="width: {{ scores.C }}%"></div>
             </div>
         </div>
+    </div>
+</div>
 
-    </main>
+<div class="info-card">
+    <p class="section-eyebrow">Типология</p>
+    <div class="disc-descriptions">
+        <div class="disc-desc-item {% if primary_type == 'D' %}dominant{% endif %}">
+            <div class="disc-desc-letter">D</div>
+            <div class="disc-desc-text">
+                <span class="disc-desc-name">Доминирование</span>
+                <span class="disc-desc-caption">Решительность, напористость, ориентация на результат</span>
+            </div>
+        </div>
+        <div class="disc-desc-item {% if primary_type == 'I' %}dominant{% endif %}">
+            <div class="disc-desc-letter">I</div>
+            <div class="disc-desc-text">
+                <span class="disc-desc-name">Влияние</span>
+                <span class="disc-desc-caption">Общительность, оптимизм, умение убеждать</span>
+            </div>
+        </div>
+        <div class="disc-desc-item {% if primary_type == 'S' %}dominant{% endif %}">
+            <div class="disc-desc-letter">S</div>
+            <div class="disc-desc-text">
+                <span class="disc-desc-name">Стабильность</span>
+                <span class="disc-desc-caption">Надёжность, терпение, командная работа</span>
+            </div>
+        </div>
+        <div class="disc-desc-item {% if primary_type == 'C' %}dominant{% endif %}">
+            <div class="disc-desc-letter">C</div>
+            <div class="disc-desc-text">
+                <span class="disc-desc-name">Соответствие</span>
+                <span class="disc-desc-caption">Точность, аналитичность, следование правилам</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-</body>
-</html>
+<div class="actions-card">
+    <p class="actions-text">Результаты сохранены в профиле сотрудника</p>
+    <div class="actions-btns">
+        <a href="/employees/{{ employee.id }}/disc/" class="btn-secondary">Пройти заново</a>
+        <a href="/" class="btn-primary">На главную →</a>
+    </div>
+</div>
+{% endblock %}ы

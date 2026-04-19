@@ -5,334 +5,411 @@
     <meta charset="UTF-8">
     <title>Рекомендация — {{ ideal.target_role }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --black: #000000; --white: #FFFFFF; --pink: #FF3495;
-            --gray-bg: #F2F2F2; --gray-text: #666666; --border: #E0E0E0;
+            --black: #000; --white: #fff; --pink: #FF3495;
+            --gray-bg: #F2F2F2; --gray-text: #666; --border: #E0E0E0;
             --green: #00C853; --orange: #FF9800; --red: #FF3B30;
             --font-heading: 'Barlow Condensed', sans-serif;
             --font-body: 'Barlow Semi Condensed', sans-serif;
         }
-        body { font-family: var(--font-body); background: var(--gray-bg); color: var(--black); }
-        .header { background: var(--black); padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        body { font-family: var(--font-body); background: var(--gray-bg); color: var(--black); min-height: 100vh; }
+
+        .header { background: var(--black); padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
         .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .logo-img { height: 44px; }
-        .logo-app-name { font-family: var(--font-heading); font-weight: 800; font-size: 14px; color: var(--white); letter-spacing: 3px; text-transform: uppercase; opacity: 0.5; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.2); }
-        .header-nav { display: flex; align-items: center; gap: 20px; }
-        .nav-link { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); text-decoration: none; }
+        .logo-name { font-family: var(--font-heading); font-weight: 800; font-size: 14px; color: var(--white); letter-spacing: 3px; text-transform: uppercase; opacity: .5; padding-left: 12px; border-left: 1px solid rgba(255,255,255,.2); }
+        .header-nav { display: flex; align-items: center; gap: 16px; }
+        .nav-link { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.5); text-decoration: none; transition: color .15s; }
         .nav-link:hover { color: var(--white); }
-        .btn-logout { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--pink); text-decoration: none; border: 1px solid var(--pink); padding: 6px 14px; border-radius: 2px; transition: background 0.15s, color 0.15s; }
-        .btn-logout:hover { background: var(--pink); color: var(--white); }
-        .hero-banner { background: var(--black); padding: 48px 40px; position: relative; overflow: hidden; }
-        .hero-banner::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--pink); }
-        .hero-inner { max-width: 1100px; margin: 0 auto; }
-        .hero-eyebrow { font-family: var(--font-heading); font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--pink); margin-bottom: 12px; }
-        .hero-title { font-family: var(--font-heading); font-weight: 900; font-size: 52px; text-transform: uppercase; letter-spacing: -2px; line-height: 0.92; color: var(--white); margin-bottom: 16px; }
-        .hero-desc { font-size: 15px; color: rgba(255,255,255,0.5); }
-        .progress-stats { display: flex; gap: 20px; margin-top: 20px; padding: 12px 20px; background: rgba(255,255,255,0.08); border-radius: 4px; }
-        .stat-item { font-size: 13px; color: rgba(255,255,255,0.7); }
-        .stat-value { font-weight: 900; color: var(--pink); font-size: 18px; margin-right: 5px; }
-        .ideal-summary { background: rgba(255,255,255,0.08); border-radius: 4px; padding: 16px 24px; margin-top: 20px; }
-        .ideal-summary p { margin: 4px 0; font-size: 13px; color: rgba(255,255,255,0.7); }
-        .page { max-width: 1100px; margin: 0 auto; padding: 40px; }
-        .candidate-card { background: var(--white); border-radius: 4px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        .score-header { background: var(--black); padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
-        .score-match { text-align: center; }
-        .score-value { font-family: var(--font-heading); font-size: 48px; font-weight: 900; color: var(--pink); line-height: 1; }
-        .score-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 2px; text-transform: uppercase; }
-        .rank-badge { background: var(--pink); padding: 8px 20px; border-radius: 2px; font-family: var(--font-heading); font-weight: 900; font-size: 14px; letter-spacing: 2px; color: var(--white); }
-        .candidate-body { padding: 32px; }
-        .candidate-name { font-family: var(--font-heading); font-size: 32px; font-weight: 900; text-transform: uppercase; margin-bottom: 16px; }
-        .candidate-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-        .meta-item { display: flex; flex-direction: column; gap: 4px; }
-        .meta-label { font-family: var(--font-heading); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); }
-        .meta-value { font-size: 16px; font-weight: 600; }
-        .disc-container { display: flex; gap: 12px; margin: 24px 0; }
-        .disc-item { flex: 1; text-align: center; padding: 16px; background: var(--gray-bg); border-radius: 4px; }
-        .disc-letter { font-family: var(--font-heading); font-size: 28px; font-weight: 900; margin-bottom: 8px; }
-        .disc-item.high .disc-letter { color: var(--pink); }
-        .disc-value { font-size: 20px; font-weight: 900; }
+        .btn-exit { font-family: var(--font-heading); font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--pink); text-decoration: none; border: 1px solid var(--pink); padding: 6px 14px; border-radius: 2px; transition: background .15s, color .15s; }
+        .btn-exit:hover { background: var(--pink); color: var(--white); }
 
-        /* ── Кружки совместимости ── */
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin: 24px 0;
-            padding: 24px 20px;
-            background: var(--gray-bg);
-            border-radius: 4px;
-        }
-        .breakdown-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-        .breakdown-label {
-            font-family: var(--font-heading);
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--gray-text);
-            text-align: center;
-        }
-        .circle {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-heading);
-            font-weight: 900;
-            font-size: 15px;
-            color: var(--white);
-            position: relative;
-        }
+        .hero { background: var(--black); padding: 48px 40px 40px; position: relative; overflow: hidden; }
+        .hero::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--pink); }
+        .hero::before { content: 'ПОДБОР'; position: absolute; right: -10px; bottom: -30px; font-family: var(--font-heading); font-weight: 900; font-size: 180px; color: rgba(255,255,255,.03); letter-spacing: -8px; line-height: 1; pointer-events: none; }
+        .hero-inner { max-width: 1100px; margin: 0 auto; }
+        .eyebrow { font-family: var(--font-heading); font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--pink); margin-bottom: 10px; }
+        .hero-title { font-family: var(--font-heading); font-weight: 900; font-size: 52px; text-transform: uppercase; letter-spacing: -2px; line-height: .92; color: var(--white); margin-bottom: 8px; }
+        .hero-role { font-size: 15px; color: rgba(255,255,255,.5); margin-bottom: 20px; }
+        .hero-role strong { color: var(--white); }
+
+        .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        .meta-pill { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); border-radius: 2px; padding: 8px 16px; font-size: 13px; color: rgba(255,255,255,.7); }
+        .meta-pill strong { color: var(--white); }
+
+        .progress-bar-wrap { margin-top: 4px; }
+        .progress-label { font-family: var(--font-heading); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 6px; }
+        .progress-track { height: 3px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--pink); border-radius: 2px; transition: width .3s; }
+
+        .page { max-width: 1100px; margin: 0 auto; padding: 36px 40px; }
+
+        .card { background: var(--white); border-radius: 4px; overflow: hidden; margin-bottom: 20px; }
+
+        .card-score-bar { background: var(--black); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .score-block { display: flex; align-items: baseline; gap: 8px; }
+        .score-num { font-family: var(--font-heading); font-size: 64px; font-weight: 900; color: var(--pink); line-height: 1; }
+        .score-pct { font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: rgba(255,255,255,.4); }
+        .score-sub { font-family: var(--font-heading); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,.3); margin-top: 2px; }
+        .rank-badge { background: var(--pink); padding: 10px 24px; border-radius: 2px; font-family: var(--font-heading); font-weight: 900; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); white-space: nowrap; }
+
+        .card-body { padding: 32px; }
+
+        .cand-name { font-family: var(--font-heading); font-weight: 900; font-size: 36px; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 20px; }
+
+        .info-row { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+        .info-cell { flex: 1; padding: 14px 20px; border-right: 1px solid var(--border); }
+        .info-cell:last-child { border-right: none; }
+        .info-label { font-family: var(--font-heading); font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 4px; }
+        .info-val { font-size: 15px; font-weight: 600; }
+
+        .disc-row { display: flex; gap: 8px; margin-bottom: 24px; }
+        .disc-cell { flex: 1; background: var(--gray-bg); border-radius: 2px; padding: 16px 12px; text-align: center; position: relative; overflow: hidden; }
+        .disc-cell.dominant { background: var(--black); }
+        .disc-letter { font-family: var(--font-heading); font-weight: 900; font-size: 32px; line-height: 1; margin-bottom: 4px; color: var(--gray-text); }
+        .disc-cell.dominant .disc-letter { color: var(--pink); }
+        .disc-pct { font-family: var(--font-heading); font-size: 20px; font-weight: 900; color: var(--black); }
+        .disc-cell.dominant .disc-pct { color: var(--white); }
+        .disc-name { font-family: var(--font-heading); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-text); margin-top: 4px; }
+        .disc-cell.dominant .disc-name { color: rgba(255,255,255,.4); }
+        .disc-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--border); }
+        .disc-bar-fill { height: 100%; background: var(--pink); }
+
+        .circles-section { margin-bottom: 24px; }
+        .circles-title { font-family: var(--font-heading); font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 14px; }
+        .circles-row { display: flex; gap: 8px; }
+        .circle-item { flex: 1; background: var(--gray-bg); border-radius: 2px; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .circle { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 900; font-size: 14px; color: var(--white); }
         .circle-green  { background: var(--green); }
         .circle-orange { background: var(--orange); }
         .circle-red    { background: var(--red); }
+        .circle-label { font-family: var(--font-heading); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-text); text-align: center; }
 
-        .action-buttons { display: flex; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
-        .btn-hire { flex: 1; background: var(--green); color: white; padding: 16px; border: none; border-radius: 4px; font-family: var(--font-heading); font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: transform 0.15s; }
-        .btn-hire:hover { transform: translateY(-2px); background: #00b048; }
-        .btn-postpone { flex: 1; background: var(--orange); color: white; padding: 16px; border: none; border-radius: 4px; font-family: var(--font-heading); font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: transform 0.15s; }
-        .btn-postpone:hover { transform: translateY(-2px); background: #e68900; }
-        .btn-reject { flex: 1; background: var(--red); color: white; padding: 16px; border: none; border-radius: 4px; font-family: var(--font-heading); font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: transform 0.15s; }
-        .btn-reject:hover { transform: translateY(-2px); background: #e02e24; }
-        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--black); font-family: var(--font-heading); font-weight: 800; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; padding: 12px 24px; border: 2px solid var(--black); border-radius: 2px; cursor: pointer; transition: background 0.15s, color 0.15s; }
-        .btn-secondary:hover { background: var(--black); color: var(--white); }
-        .pending-section { background: var(--white); border-radius: 4px; padding: 24px; margin-top: 30px; }
-        .pending-title { font-family: var(--font-heading); font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-        .pending-badge { background: var(--orange); color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; }
-        .pending-list { display: flex; flex-direction: column; gap: 12px; }
-        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-bg); border-radius: 4px; }
-        .pending-name { font-weight: 600; }
-        .pending-actions { display: flex; gap: 8px; }
-        .empty-state { text-align: center; padding: 60px; background: var(--white); border-radius: 4px; }
+        .explanation-section { background: var(--gray-bg); border-radius: 2px; padding: 20px 24px; margin-bottom: 24px; }
+        .explanation-title { font-family: var(--font-heading); font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 12px; }
+        .explanation-list { display: flex; flex-direction: column; gap: 6px; }
+        .explanation-line { font-size: 13px; color: #333; line-height: 1.4; }
+
+        .actions { display: flex; gap: 8px; padding-top: 24px; border-top: 1px solid var(--border); }
+        .actions form { flex: 1; }
+        .btn-action { width: 100%; padding: 16px 8px; border: none; border-radius: 2px; font-family: var(--font-heading); font-weight: 900; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: opacity .15s, transform .15s; color: var(--white); }
+        .btn-action:hover { opacity: .88; transform: translateY(-1px); }
+        .btn-green  { background: var(--green); }
+        .btn-orange { background: var(--orange); }
+        .btn-red    { background: var(--red); }
+
+        .reject-wrap { flex: 1; position: relative; }
+        .reject-panel { display: none; position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.15); z-index: 10; min-width: 280px; }
+        .reject-panel.open { display: block; }
+        .reject-panel-title { font-family: var(--font-heading); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+        .rp-label { font-family: var(--font-heading); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-text); margin-bottom: 6px; display: block; }
+        .rp-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 2px; font-family: var(--font-body); font-size: 14px; margin-bottom: 14px; outline: none; }
+        .rp-select:focus { border-color: var(--black); }
+        .rp-btns { display: flex; gap: 8px; }
+        .rp-confirm { flex: 1; background: var(--red); color: var(--white); border: none; padding: 10px; border-radius: 2px; font-family: var(--font-heading); font-weight: 900; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+        .rp-cancel  { flex: 1; background: var(--gray-bg); color: var(--black); border: none; padding: 10px; border-radius: 2px; font-family: var(--font-heading); font-weight: 900; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+
+        .pending-card { background: var(--white); border-radius: 4px; padding: 24px 32px; margin-bottom: 20px; }
+        .pending-head { font-family: var(--font-heading); font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .badge { background: var(--orange); color: var(--white); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .pending-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .pending-item:last-child { border-bottom: none; }
+        .pending-name { font-weight: 600; font-size: 15px; }
+        .pending-btns { display: flex; gap: 8px; }
+        .pbtn { font-family: var(--font-heading); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 14px; border-radius: 2px; border: none; cursor: pointer; color: var(--white); }
+        .pbtn-green { background: var(--green); }
+        .pbtn-gray  { background: var(--gray-text); }
+
+        .empty { background: var(--white); border-radius: 4px; padding: 80px 40px; text-align: center; }
+        .empty-title { font-family: var(--font-heading); font-weight: 900; font-size: 36px; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 12px; }
+        .empty-sub { font-size: 15px; color: var(--gray-text); margin-bottom: 28px; }
+        .btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--black); font-family: var(--font-heading); font-weight: 800; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; padding: 12px 24px; border: 2px solid var(--black); border-radius: 2px; transition: background .15s, color .15s; }
+        .btn-outline:hover { background: var(--black); color: var(--white); }
+
+        .toasts { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { background: var(--white); padding: 12px 20px; border-radius: 2px; box-shadow: 0 4px 16px rgba(0,0,0,.15); font-family: var(--font-heading); font-weight: 700; font-size: 13px; letter-spacing: 1px; cursor: pointer; animation: tin .3s ease; }
+        .toast.success { border-left: 4px solid var(--green); color: var(--green); }
+        .toast.info    { border-left: 4px solid var(--orange); color: var(--orange); }
+        .toast.warning { border-left: 4px solid var(--red); color: var(--red); }
+        @keyframes tin  { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes tout { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
         @media (max-width: 768px) {
-            .breakdown-grid { grid-template-columns: repeat(3, 1fr); }
-            .action-buttons { flex-direction: column; }
-            .candidate-meta { flex-direction: column; gap: 12px; }
             .header { padding: 0 20px; }
+            .hero { padding: 32px 20px; }
             .page { padding: 20px; }
+            .card-body { padding: 20px; }
+            .circles-row { flex-wrap: wrap; }
+            .circle-item { min-width: calc(33% - 6px); }
+            .info-row { flex-direction: column; }
+            .info-cell { border-right: none; border-bottom: 1px solid var(--border); }
+            .info-cell:last-child { border-bottom: none; }
+            .actions { flex-direction: column; }
+            .reject-panel { position: fixed; bottom: 0; left: 0; right: 0; border-radius: 12px 12px 0 0; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <a href="/" class="logo">
-            <img src="{% static 'img/logo.caf05db1.gif' %}" alt="Логотип" class="logo-img">
-            <span class="logo-app-name">Team Builder</span>
-        </a>
-        <nav class="header-nav">
-            <a href="{% url 'create_ideal_profile' %}" class="nav-link">← Новый профиль</a>
-            <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
-        </nav>
-    </header>
 
-    <div class="hero-banner">
-        <div class="hero-inner">
-            <p class="hero-eyebrow">Рекомендация</p>
-            <h1 class="hero-title">Лучший кандидат</h1>
-            <p class="hero-desc">Для роли: <strong>{{ ideal.target_role }}</strong></p>
-            <div class="progress-stats">
-                <div class="stat-item">
-                    <span class="stat-value">{{ reviewed_count }}</span> / <span class="stat-value">{{ all_count }}</span> просмотрено
-                </div>
-            </div>
-            <div class="ideal-summary">
-                <p>🎯 Идеальный DISC: D={{ ideal.disc_preferred.D }}% / I={{ ideal.disc_preferred.I }}% / S={{ ideal.disc_preferred.S }}% / C={{ ideal.disc_preferred.C }}%</p>
-                <p>📊 Возраст: {{ ideal.age_min }}–{{ ideal.age_max }} лет</p>
-                {% if ideal.gerchikov_preferred %}
-                <p>💡 Мотивация: {{ ideal.get_gerchikov_preferred_display }}</p>
+<header class="header">
+    <a href="/" class="logo">
+        <img src="{% static 'img/logo.caf05db1.gif' %}" alt="t2" class="logo-img">
+        <span class="logo-name">Team Builder</span>
+    </a>
+    <nav class="header-nav">
+        <a href="{% url 'create_ideal_profile' %}" class="nav-link">← Новый профиль</a>
+        <a href="{% url 'logout' %}" class="btn-exit">Выйти</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">Рекомендация системы</p>
+        <h1 class="hero-title">Лучший<br>кандидат</h1>
+        <p class="hero-role">Роль: <strong>{{ ideal.target_role }}</strong></p>
+
+        <div class="meta-row">
+            <div class="meta-pill"> D={{ ideal.disc_preferred.D }}% / I={{ ideal.disc_preferred.I }}% / S={{ ideal.disc_preferred.S }}% / C={{ ideal.disc_preferred.C }}%</div>
+            <div class="meta-pill"> Возраст: <strong>{{ ideal.age_min }}–{{ ideal.age_max }} лет</strong></div>
+            {% if ideal.gerchikov_preferred %}
+            <div class="meta-pill"><strong>{{ ideal.get_gerchikov_preferred_display }}</strong></div>
+            {% endif %}
+        </div>
+
+        <div class="progress-bar-wrap">
+            <div class="progress-label">Просмотрено {{ reviewed_count }} из {{ all_count }}</div>
+            <div class="progress-track">
+                {% if all_count %}
+                <div class="progress-fill" style="width: {% widthratio reviewed_count all_count 100 %}%"></div>
                 {% endif %}
             </div>
         </div>
     </div>
+</div>
 
-    <main class="page">
-        {% if top_candidate %}
-            {% with candidate=top_candidate %}
-            <div class="candidate-card">
-                <div class="score-header">
-                    <div class="score-match">
-                        <div class="score-value">{{ candidate.score }}%</div>
-                        <div class="score-label">соответствие</div>
-                    </div>
-                    <div class="rank-badge">#1 ЛУЧШИЙ КАНДИДАТ</div>
-                </div>
+<main class="page">
 
-                <div class="candidate-body">
-                    <div class="candidate-name">{{ candidate.employee.fio }}</div>
+{% if top_candidate %}
+{% with c=top_candidate %}
+<div class="card">
 
-                    <div class="candidate-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Возраст</span>
-                            <span class="meta-value">{{ candidate.employee.age }} лет</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Поколение</span>
-                            <span class="meta-value">{{ candidate.generation_display|default:"—" }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Мотивация</span>
-                            <span class="meta-value">{{ candidate.gerchikov_display|default:"—" }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Роль в команде</span>
-                            <span class="meta-value">{{ candidate.employee.role_in_team|default:"—" }}</span>
-                        </div>
-                    </div>
-
-                    <div class="disc-container">
-                        <div class="disc-item {% if candidate.disc_d >= 60 %}high{% endif %}">
-                            <div class="disc-letter">D</div>
-                            <div class="disc-value">{{ candidate.disc_d }}%</div>
-                            <div class="meta-label">Доминирование</div>
-                        </div>
-                        <div class="disc-item {% if candidate.disc_i >= 60 %}high{% endif %}">
-                            <div class="disc-letter">I</div>
-                            <div class="disc-value">{{ candidate.disc_i }}%</div>
-                            <div class="meta-label">Влияние</div>
-                        </div>
-                        <div class="disc-item {% if candidate.disc_s >= 60 %}high{% endif %}">
-                            <div class="disc-letter">S</div>
-                            <div class="disc-value">{{ candidate.disc_s }}%</div>
-                            <div class="meta-label">Стабильность</div>
-                        </div>
-                        <div class="disc-item {% if candidate.disc_c >= 60 %}high{% endif %}">
-                            <div class="disc-letter">C</div>
-                            <div class="disc-value">{{ candidate.disc_c }}%</div>
-                            <div class="meta-label">Аналитичность</div>
-                        </div>
-                    </div>
-
-                    <!-- Кружки совместимости -->
-                    <div class="breakdown-grid">
-
-                        {% with v=candidate.breakdown.disc %}
-                        <div class="breakdown-item">
-                            <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">
-                                {{ v }}%
-                            </div>
-                            <div class="breakdown-label">DISC</div>
-                        </div>
-                        {% endwith %}
-
-                        {% with v=candidate.breakdown.role_functions %}
-                        <div class="breakdown-item">
-                            <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">
-                                {{ v }}%
-                            </div>
-                            <div class="breakdown-label">Функции</div>
-                        </div>
-                        {% endwith %}
-
-                        {% with v=candidate.breakdown.gerchikov %}
-                        <div class="breakdown-item">
-                            <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">
-                                {{ v }}%
-                            </div>
-                            <div class="breakdown-label">Мотивация</div>
-                        </div>
-                        {% endwith %}
-
-                        {% with v=candidate.breakdown.age %}
-                        <div class="breakdown-item">
-                            <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">
-                                {{ v }}%
-                            </div>
-                            <div class="breakdown-label">Возраст</div>
-                        </div>
-                        {% endwith %}
-
-                        {% with v=candidate.breakdown.generation %}
-                        <div class="breakdown-item">
-                            <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">
-                                {{ v }}%
-                            </div>
-                            <div class="breakdown-label">Поколение</div>
-                        </div>
-                        {% endwith %}
-
-                    </div>
-
-                    <div class="action-buttons">
-                        <form method="post" action="{% url 'hire_employee' ideal.id candidate.employee.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-hire">Нанять сотрудника</button>
-                        </form>
-                        <form method="post" action="{% url 'postpone_employee' ideal.id candidate.employee.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-postpone">Отложить</button>
-                        </form>
-                        <form method="post" action="{% url 'reject_employee' ideal.id candidate.employee.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-reject">Отказать</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="card-score-bar">
+        <div>
+            <div class="score-block">
+                <span class="score-num">{{ c.score }}</span>
+                <span class="score-pct">%</span>
             </div>
-            {% endwith %}
-        {% else %}
-            <div class="empty-state">
-                <p>🎉 Поздравляем! Все кандидаты просмотрены</p>
-                <p class="meta-label" style="margin-top: 10px;">Вы рассмотрели всех {{ all_count }} кандидатов</p>
-                <a href="{% url 'create_ideal_profile' %}" class="btn-secondary" style="margin-top: 20px; display: inline-block;">Создать новый профиль</a>
-            </div>
-        {% endif %}
+            <div class="score-sub">соответствие профилю</div>
+        </div>
+        <div class="rank-badge">#1 Лучший кандидат</div>
+    </div>
 
-        {% if pending_candidates %}
-        <div class="pending-section">
-            <div class="pending-title">
-                📦 Отложенные кандидаты
-                <span class="pending-badge">{{ pending_candidates|length }}</span>
+    <div class="card-body">
+        <div class="cand-name">{{ c.employee.fio }}</div>
+
+        <div class="info-row">
+            <div class="info-cell">
+                <div class="info-label">Возраст</div>
+                <div class="info-val">{{ c.employee.age }} лет</div>
             </div>
-            <div class="pending-list">
-                {% for employee in pending_candidates %}
-                <div class="pending-item">
-                    <span class="pending-name">{{ employee.fio }}</span>
-                    <div class="pending-actions">
-                        <form method="post" action="{% url 'hire_employee' ideal.id employee.id %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-hire" style="padding: 6px 14px; font-size: 11px;">✅ Нанять</button>
-                        </form>
-                        <form method="post" action="{% url 'remove_from_pending' ideal.id employee.id %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-secondary" style="padding: 6px 14px; font-size: 11px;">🗑 Удалить</button>
-                        </form>
-                    </div>
+            <div class="info-cell">
+                <div class="info-label">Поколение</div>
+                <div class="info-val">{{ c.generation_display|default:"—" }}</div>
+            </div>
+            <div class="info-cell">
+                <div class="info-label">Мотивация</div>
+                <div class="info-val">{{ c.gerchikov_display|default:"—" }}</div>
+            </div>
+            <div class="info-cell">
+                <div class="info-label">Роль</div>
+                <div class="info-val">{{ c.employee.role_in_team|default:"—" }}</div>
+            </div>
+            {% if c.employee.salary_min %}
+            <div class="info-cell">
+                <div class="info-label">Зарплата от</div>
+                <div class="info-val">{{ c.employee.salary_min|floatformat:0 }} ₽</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="disc-row">
+            <div class="disc-cell {% if c.disc_d >= 60 %}dominant{% endif %}">
+                <div class="disc-letter">D</div>
+                <div class="disc-pct">{{ c.disc_d }}%</div>
+                <div class="disc-name">Доминирование</div>
+                <div class="disc-bar"><div class="disc-bar-fill" style="width:{{ c.disc_d }}%"></div></div>
+            </div>
+            <div class="disc-cell {% if c.disc_i >= 60 %}dominant{% endif %}">
+                <div class="disc-letter">I</div>
+                <div class="disc-pct">{{ c.disc_i }}%</div>
+                <div class="disc-name">Влияние</div>
+                <div class="disc-bar"><div class="disc-bar-fill" style="width:{{ c.disc_i }}%"></div></div>
+            </div>
+            <div class="disc-cell {% if c.disc_s >= 60 %}dominant{% endif %}">
+                <div class="disc-letter">S</div>
+                <div class="disc-pct">{{ c.disc_s }}%</div>
+                <div class="disc-name">Стабильность</div>
+                <div class="disc-bar"><div class="disc-bar-fill" style="width:{{ c.disc_s }}%"></div></div>
+            </div>
+            <div class="disc-cell {% if c.disc_c >= 60 %}dominant{% endif %}">
+                <div class="disc-letter">C</div>
+                <div class="disc-pct">{{ c.disc_c }}%</div>
+                <div class="disc-name">Аналитичность</div>
+                <div class="disc-bar"><div class="disc-bar-fill" style="width:{{ c.disc_c }}%"></div></div>
+            </div>
+        </div>
+
+        <div class="circles-section">
+            <div class="circles-title">Совместимость по параметрам</div>
+            <div class="circles-row">
+                {% with v=c.breakdown.disc %}
+                <div class="circle-item">
+                    <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">{{ v }}%</div>
+                    <div class="circle-label">DISC</div>
                 </div>
+                {% endwith %}
+                {% with v=c.breakdown.role_functions %}
+                <div class="circle-item">
+                    <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">{{ v }}%</div>
+                    <div class="circle-label">Функции</div>
+                </div>
+                {% endwith %}
+                {% with v=c.breakdown.gerchikov %}
+                <div class="circle-item">
+                    <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">{{ v }}%</div>
+                    <div class="circle-label">Мотивация</div>
+                </div>
+                {% endwith %}
+                {% with v=c.breakdown.age %}
+                <div class="circle-item">
+                    <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">{{ v }}%</div>
+                    <div class="circle-label">Возраст</div>
+                </div>
+                {% endwith %}
+                {% with v=c.breakdown.generation %}
+                <div class="circle-item">
+                    <div class="circle {% if v >= 70 %}circle-green{% elif v >= 50 %}circle-orange{% else %}circle-red{% endif %}">{{ v }}%</div>
+                    <div class="circle-label">Поколение</div>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+
+        {% if c.explanation %}
+        <div class="explanation-section">
+            <div class="explanation-title">Почему этот кандидат</div>
+            <div class="explanation-list">
+                {% for line in c.explanation %}
+                <div class="explanation-line">{{ line }}</div>
                 {% endfor %}
             </div>
         </div>
         {% endif %}
 
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="{% url 'create_ideal_profile' %}" class="btn-secondary">← Создать новый профиль</a>
+        <div class="actions">
+            <form method="post" action="{% url 'hire_employee' ideal.id c.employee.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-green">Нанять</button>
+            </form>
+            <form method="post" action="{% url 'postpone_employee' ideal.id c.employee.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-orange">Отложить</button>
+            </form>
+            <div class="reject-wrap">
+                <button type="button" class="btn-action btn-red" onclick="toggleReject(this)">Отказать</button>
+                <div class="reject-panel" id="reject-panel">
+                    <div class="reject-panel-title">Причина отказа</div>
+                    <form method="post" action="{% url 'reject_employee' ideal.id c.employee.id %}">
+                        {% csrf_token %}
+                        <label class="rp-label">Выберите причину</label>
+                        <select name="reject_reason" class="rp-select" required>
+                            <option value="">— выберите —</option>
+                            <option>Не подходит по навыкам</option>
+                            <option>Не подходит по опыту</option>
+                            <option>Зарплатные ожидания</option>
+                            <option>Не подходит по DISC</option>
+                            <option>Не подходит по мотивации</option>
+                            <option>Культурное несоответствие</option>
+                            <option>Нашли лучшего кандидата</option>
+                        </select>
+                        <div class="rp-btns">
+                            <button type="submit" class="rp-confirm">Подтвердить</button>
+                            <button type="button" class="rp-cancel" onclick="closeReject()">Отмена</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </main>
 
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
-    <script>
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        const colors = { success: '#00C853', info: '#FF9800', warning: '#FF3B30', error: '#FF3B30' };
-        toast.style.cssText = `background:white;color:${colors[type]||colors.success};padding:12px 24px;margin-bottom:10px;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;border-left:4px solid ${colors[type]||colors.success};animation:slideIn 0.3s ease;cursor:pointer;`;
-        toast.textContent = message;
-        container.appendChild(toast);
-        setTimeout(() => { toast.style.animation = 'slideOut 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
-        toast.onclick = () => { toast.style.animation = 'slideOut 0.3s ease'; setTimeout(() => toast.remove(), 300); };
-    }
-    const style = document.createElement('style');
-    style.textContent = `@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}`;
-    document.head.appendChild(style);
-    {% if messages %}{% for message in messages %}showToast("{{ message }}","{{ message.tags }}");{% endfor %}{% endif %}
-    </script>
+    </div>
+</div>
+{% endwith %}
+
+{% else %}
+<div class="empty">
+    <div class="empty-title">Все просмотрены</div>
+    <p class="empty-sub">Вы рассмотрели всех {{ all_count }} кандидатов по этому профилю</p>
+    <a href="{% url 'create_ideal_profile' %}" class="btn-outline">← Создать новый профиль</a>
+</div>
+{% endif %}
+
+{% if pending_candidates %}
+<div class="pending-card">
+    <div class="pending-head">
+        Отложенные
+        <span class="badge">{{ pending_candidates|length }}</span>
+    </div>
+    {% for employee in pending_candidates %}
+    <div class="pending-item">
+        <span class="pending-name">{{ employee.fio }}</span>
+        <div class="pending-btns">
+            <form method="post" action="{% url 'hire_employee' ideal.id employee.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="pbtn pbtn-green">Нанять</button>
+            </form>
+            <form method="post" action="{% url 'remove_from_pending' ideal.id employee.id %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="pbtn pbtn-gray">Удалить</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div style="text-align:center; margin-top: 8px;">
+    <a href="{% url 'create_ideal_profile' %}" class="btn-outline">← Новый профиль</a>
+</div>
+
+</main>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+function toggleReject(btn) {
+    const panel = document.getElementById('reject-panel');
+    panel.classList.toggle('open');
+}
+function closeReject() {
+    document.getElementById('reject-panel').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+    const wrap = document.querySelector('.reject-wrap');
+    if (wrap && !wrap.contains(e.target)) closeReject();
+});
+
+function toast(msg, type) {
+    const c = document.getElementById('toasts');
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type || 'success');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => { t.style.animation = 'tout .3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+    t.onclick = () => t.remove();
+}
+{% if messages %}{% for m in messages %}toast("{{ m }}", "{{ m.tags }}");{% endfor %}{% endif %}
+</script>
 </body>
 </html>
